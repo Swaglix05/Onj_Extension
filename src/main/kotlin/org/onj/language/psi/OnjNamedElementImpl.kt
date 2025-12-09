@@ -1,4 +1,4 @@
-package org.onj.language.psi.impl
+package org.onj.language.psi
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode

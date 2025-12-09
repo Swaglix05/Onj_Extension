@@ -10,29 +10,29 @@ import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.NonNls
 import org.onj.language.OnjLexer
 import org.onj.language.psi.OnjTokenSets
-import org.onj.language.psi.OnjVariableDeclarationName
-import org.onj.language.psi.impl.OnjNamedElement
-
-class OnjFindUsagesProvider : FindUsagesProvider {
-
-    override fun canFindUsagesFor(p0: PsiElement): Boolean = p0 is OnjNamedElement
-
-    override fun getHelpId(p0: PsiElement): @NonNls String? = null
-
-    override fun getType(p0: PsiElement): @Nls String = when(p0){
-        is OnjVariableDeclarationName -> "Local Variable"
-        else -> ""
-    }
-
-    override fun getDescriptiveName(p0: PsiElement): @Nls String = (p0 as OnjNamedElement).name.toString()
-
-    override fun getNodeText(
-        p0: PsiElement,
-        p1: Boolean
-    ): @Nls String = (p0.text)
-
-
-    override fun getWordsScanner(): WordsScanner? {
-        return DefaultWordsScanner(object : FlexAdapter(OnjLexer(null)) { }, OnjTokenSets.calledNames, OnjTokenSets.comments,TokenSet.EMPTY)
-    }
-}
+//import org.onj.language.psi.OnjVariableDeclarationName
+//import org.onj.language.psi.OnjNamedElement
+//
+//class OnjFindUsagesProvider : FindUsagesProvider {
+//
+//    override fun canFindUsagesFor(p0: PsiElement): Boolean = p0 is OnjNamedElement
+//
+//    override fun getHelpId(p0: PsiElement): @NonNls String? = null
+//
+//    override fun getType(p0: PsiElement): @Nls String = when(p0){
+//        is OnjVariableDeclarationName -> "Local Variable"
+//        else -> ""
+//    }
+//
+//    override fun getDescriptiveName(p0: PsiElement): @Nls String = (p0 as OnjNamedElement).name.toString()
+//
+//    override fun getNodeText(
+//        p0: PsiElement,
+//        p1: Boolean
+//    ): @Nls String = (p0.text)
+//
+//
+//    override fun getWordsScanner(): WordsScanner? {
+//        return DefaultWordsScanner(object : FlexAdapter(OnjLexer(null)) { }, OnjTokenSets.calledNames, OnjTokenSets.comments,TokenSet.EMPTY)
+//    }
+//}

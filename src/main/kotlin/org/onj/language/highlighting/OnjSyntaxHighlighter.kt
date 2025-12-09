@@ -10,7 +10,7 @@ import com.intellij.psi.TokenType
 import com.intellij.psi.tree.IElementType
 import org.onj.language.OnjLexer
 import org.onj.language.psi.OnjTokenSets
-import org.onj.language.psi.OnjTypes
+import org.onj.language.psi.impl.OnjTypes
 
 
 class OnjSyntaxHighlighter : SyntaxHighlighterBase() {

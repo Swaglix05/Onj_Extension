@@ -13,7 +13,7 @@ import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
 import org.onj.language.psi.OnjFile
 import org.onj.language.psi.OnjTokenSets
-import org.onj.language.psi.OnjTypes
+import org.onj.language.psi.impl.OnjTypes
 
 class OnjParserDefinition : ParserDefinition {
 
@@ -21,15 +21,17 @@ class OnjParserDefinition : ParserDefinition {
 
     override fun createLexer(project: Project?): Lexer = object : FlexAdapter(OnjLexer(null)) { }
 
-    override fun createParser(project: Project?): PsiParser = OnjParser()
+    override fun createParser(project: Project?): PsiParser = NewOnjParser()
 
     override fun getFileNodeType(): IFileElementType = file
+
+    override fun getWhitespaceTokens(): TokenSet = TokenSet.WHITE_SPACE
 
     override fun getCommentTokens(): TokenSet = OnjTokenSets.comments
 
     override fun getStringLiteralElements(): TokenSet = OnjTokenSets.strings
 
-    override fun createElement(node: ASTNode?): PsiElement = OnjTypes.Factory.createElement(node)
+    override fun createElement(node: ASTNode?): PsiElement = OnjTypes.createElement(node)
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile = OnjFile(viewProvider)
 }
