@@ -1,10 +1,35 @@
-package org.onj.language.psi.impl
+package org.onj.language.psi
 
 import com.intellij.lang.ASTNode
 import com.intellij.psi.PsiElement
 import com.intellij.psi.tree.IElementType
-import org.onj.language.psi.OnjElementType
-import org.onj.language.psi.OnjTokenType
+import org.onj.language.psi.impl.OnjAccessPsi
+import org.onj.language.psi.impl.OnjArrayEntryPsi
+import org.onj.language.psi.impl.OnjArrayPsi
+import org.onj.language.psi.impl.OnjAsContextDependentKeywordPsi
+import org.onj.language.psi.impl.OnjConversionNamePsi
+import org.onj.language.psi.impl.OnjConversionPsi
+import org.onj.language.psi.impl.OnjFilePsi
+import org.onj.language.psi.impl.OnjFloatPsi
+import org.onj.language.psi.impl.OnjFunctionCallPsi
+import org.onj.language.psi.impl.OnjFunctionNamePsi
+import org.onj.language.psi.impl.OnjGroupedValuePsi
+import org.onj.language.psi.impl.OnjImportStructurePsi
+import org.onj.language.psi.impl.OnjInfixFunctionCallPsi
+import org.onj.language.psi.impl.OnjIntPsi
+import org.onj.language.psi.impl.OnjKeyPsi
+import org.onj.language.psi.impl.OnjKeyValuePairPsi
+import org.onj.language.psi.impl.OnjNamedObjectNamePsi
+import org.onj.language.psi.impl.OnjNamedObjectPsi
+import org.onj.language.psi.impl.OnjNegation
+import org.onj.language.psi.impl.OnjObjectPsi
+import org.onj.language.psi.impl.OnjStringPsi
+import org.onj.language.psi.impl.OnjTripleDotPsi
+import org.onj.language.psi.impl.OnjUseStructure
+import org.onj.language.psi.impl.OnjVarStructurePsi
+import org.onj.language.psi.impl.OnjVariableAccessorPsi
+import org.onj.language.psi.impl.OnjVariableDeclNamePsi
+import org.onj.language.psi.impl.OnjVariableUsePsi
 
 object OnjTypes {
 
@@ -36,6 +61,7 @@ object OnjTypes {
     @JvmField val NAMED_OBJECT_NAME: IElementType = OnjElementType("NAMED_OBJECT_NAME")
     @JvmField val VARIABLE_ACCESSOR: IElementType = OnjElementType("VARIABLE_ACCESSOR")
     @JvmField val CONVERSION_NAME: IElementType = OnjElementType("CONVERSION_NAME")
+    @JvmField val ARRAY_ENTRY: IElementType = OnjElementType("ARRAY_ENTRY")
 
     @JvmField val BLOCK_COMMENT: IElementType = OnjTokenType("BLOCK_COMMENT")
     @JvmField val COLON: IElementType = OnjTokenType("COLON")
@@ -98,6 +124,7 @@ object OnjTypes {
             NAMED_OBJECT_NAME -> OnjNamedObjectNamePsi(node)
             VARIABLE_ACCESSOR -> OnjVariableAccessorPsi(node)
             CONVERSION_NAME -> OnjConversionNamePsi(node)
+            ARRAY_ENTRY -> OnjArrayEntryPsi(node)
             else -> throw RuntimeException("unknown node type ${node.elementType}")
         }
     }

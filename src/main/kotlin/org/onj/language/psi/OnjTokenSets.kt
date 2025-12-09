@@ -1,7 +1,7 @@
 package org.onj.language.psi
 
 import com.intellij.psi.tree.TokenSet
-import org.onj.language.psi.impl.OnjTypes
+import org.onj.language.psi.OnjTypes
 
 object OnjTokenSets {
 

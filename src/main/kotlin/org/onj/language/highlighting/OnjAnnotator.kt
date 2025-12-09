@@ -6,7 +6,7 @@ import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.elementType
-import org.onj.language.psi.impl.OnjTypes
+import org.onj.language.psi.OnjTypes
 
 class OnjAnnotator : Annotator {
 

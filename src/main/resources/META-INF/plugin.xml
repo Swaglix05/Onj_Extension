@@ -71,14 +71,14 @@
 <!--                implementation="org.onj.language.symbols.OnjChooseByNameContributor"/> &lt;!&ndash;This doesn't work&ndash;&gt;-->
 <!--        <psi.declarationProvider-->
 <!--                implementation="org.onj.language.symbols.OnjSymbolDeclarationProvider"/>-->
-<!--                <lang.formatter-->
-<!--                    language="Onj"-->
-<!--                    implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>-->
-<!--                <lang.braceMatcher-->
-<!--                    language="Onj"-->
-<!--                    implementationClass="org.onj.language.OnjPairedBracesMatcher"/>-->
-<!--                <lang.commenter-->
-<!--                        language="Onj"-->
-<!--                        implementationClass="org.onj.language.OnjCommenter"/>-->
+        <lang.formatter
+            language="Onj"
+            implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>
+        <lang.braceMatcher
+            language="Onj"
+            implementationClass="org.onj.language.OnjPairedBracesMatcher"/>
+        <lang.commenter
+                language="Onj"
+                implementationClass="org.onj.language.OnjCommenter"/>
     </extensions>
 </idea-plugin>

@@ -4,7 +4,7 @@ import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser
 import com.intellij.psi.tree.IElementType
-import org.onj.language.psi.impl.OnjTypes
+import org.onj.language.psi.OnjTypes
 
 class NewOnjParser : PsiParser {
 
@@ -548,7 +548,12 @@ class NewOnjParser : PsiParser {
             }
             val result = when {
                 builder.nextIs(OnjTypes.DOT) -> parseTripleDot(builder)
-                else -> parseValue(builder)
+                else -> {
+                    val entryMarker = builder.mark()
+                    val result = parseValue(builder)
+                    entryMarker.done(OnjTypes.ARRAY_ENTRY)
+                    result
+                }
             }
             if (!result) {
                 while (!builder.eof()) {
