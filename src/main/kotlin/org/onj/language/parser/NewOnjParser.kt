@@ -1,4 +1,4 @@
-package org.onj.language
+package org.onj.language.parser
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.PsiBuilder

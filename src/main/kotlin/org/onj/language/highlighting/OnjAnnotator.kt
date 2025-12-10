@@ -39,39 +39,6 @@ class OnjAnnotator : Annotator {
         else -> {}
     }
 
-//    private fun annotateVariableCall(
-//        element: PsiElement,
-//        holder: AnnotationHolder,
-//        attributes: Array<TextAttributesKey>
-//    ) {
-//        if (element !is OnjNamedElement) {
-//            annotateWithAttribute(element, holder, attributes)
-//            return
-//        }
-//
-//        val key = element.name
-//        if (key == null || key == "true" || key == "false") {
-//            annotateWithAttribute(element, holder, attributes)
-//            return
-//        }
-//        val properties = OnjUtil.findNamedElementDeclarations(element.project, key, element.containingFile as OnjFile)
-//            .filterIsInstance<OnjVariableDeclarationName>()
-//        if (properties.isEmpty()) {
-//           val newAnnot = holder.newAnnotation(HighlightSeverity.WEAK_WARNING, "Unresolved property, hopefully defined in a Namespace") //TODO this should be an error, but namespace support doesn't work yet
-//                .range(element)
-//                // ** Tutorial step 19. - Add a quick fix for the string containing possible properties
-////                .withFix(SimpleCreatePropertyQuickFix (key))
-//            attributes.forEach(newAnnot::textAttributes)
-//            newAnnot.create()
-//        } else {
-//            val annotationBuilder2 = holder
-//                .newAnnotation(HighlightSeverity.INFORMATION, properties.first().parent.text)
-//                .range(element)
-//            attributes.forEach(annotationBuilder2::textAttributes)
-//            annotationBuilder2.create()
-//        }
-//    }
-//
     private fun annotateWithAttribute(
         element: PsiElement,
         holder: AnnotationHolder,

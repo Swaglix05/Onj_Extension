@@ -2,7 +2,7 @@ package org.onj.language.formatter
 
 import com.intellij.formatting.*
 import com.intellij.psi.codeStyle.CodeStyleSettings
-import org.onj.language.OnjLanguage
+import org.onj.language.language.OnjLanguage
 import org.onj.language.psi.OnjTypes
 
 class OnjFormattingModelBuilder : FormattingModelBuilder {

@@ -22,9 +22,8 @@ class OnjReferenceContributor : PsiReferenceContributor() {
                     element: PsiElement,
                     context: ProcessingContext
                 ): Array<PsiReference> {
-                    println("References by element")
                     if (element !is OnjVariableUsePsi) return arrayOf()
-                    return arrayOf(element.reference)
+                    return element.reference?.let { arrayOf(it) } ?: arrayOf()
                 }
 
             }

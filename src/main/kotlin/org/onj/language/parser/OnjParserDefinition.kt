@@ -1,4 +1,4 @@
-package org.onj.language
+package org.onj.language.parser
 
 import com.intellij.lang.ASTNode
 import com.intellij.lang.ParserDefinition
@@ -11,7 +11,10 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.tree.IFileElementType
 import com.intellij.psi.tree.TokenSet
-import org.onj.language.psi.OnjFile
+import org.onj.language.parser.NewOnjParser
+import org.onj.language.language.OnjFile
+import org.onj.language.language.OnjLanguage
+import org.onj.language.OnjLexer
 import org.onj.language.psi.OnjTokenSets
 import org.onj.language.psi.OnjTypes
 

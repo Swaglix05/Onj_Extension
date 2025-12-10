@@ -1,7 +1,7 @@
 package org.onj.language.psi
 
 import com.intellij.psi.tree.IElementType;
-import org.onj.language.OnjLanguage
+import org.onj.language.language.OnjLanguage
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 

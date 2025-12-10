@@ -40,13 +40,13 @@
     <extensions defaultExtensionNs="com.intellij">
         <fileType
                 name="Onj File"
-                implementationClass="org.onj.language.OnjFileType"
+                implementationClass="org.onj.language.language.OnjFileType"
                 fieldName="INSTANCE"
                 language="Onj"
                 extensions="onj"/>
         <lang.parserDefinition
                 language="Onj"
-                implementationClass="org.onj.language.OnjParserDefinition"/>
+                implementationClass="org.onj.language.parser.OnjParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjSyntaxHighlighterFactory"/>

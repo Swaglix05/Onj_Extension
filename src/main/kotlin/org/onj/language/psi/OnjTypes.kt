@@ -21,11 +21,11 @@ import org.onj.language.psi.impl.OnjKeyPsi
 import org.onj.language.psi.impl.OnjKeyValuePairPsi
 import org.onj.language.psi.impl.OnjNamedObjectNamePsi
 import org.onj.language.psi.impl.OnjNamedObjectPsi
-import org.onj.language.psi.impl.OnjNegation
+import org.onj.language.psi.impl.OnjNegationPsi
 import org.onj.language.psi.impl.OnjObjectPsi
 import org.onj.language.psi.impl.OnjStringPsi
 import org.onj.language.psi.impl.OnjTripleDotPsi
-import org.onj.language.psi.impl.OnjUseStructure
+import org.onj.language.psi.impl.OnjUseStructurePsi
 import org.onj.language.psi.impl.OnjVarStructurePsi
 import org.onj.language.psi.impl.OnjVariableAccessorPsi
 import org.onj.language.psi.impl.OnjVariableDeclNamePsi
@@ -103,12 +103,12 @@ object OnjTypes {
             FILE -> OnjFilePsi(node)
             IMPORT_STRUCTURE -> OnjImportStructurePsi(node)
             AS_CONTEXT_DEPENDENT_KEYWORD -> OnjAsContextDependentKeywordPsi(node)
-            USE_STRUCTURE -> OnjUseStructure(node)
+            USE_STRUCTURE -> OnjUseStructurePsi(node)
             VAR_STRUCTURE -> OnjVarStructurePsi(node)
             GROUPED_VALUE -> OnjGroupedValuePsi(node)
             ACCESS -> OnjAccessPsi(node)
             VARIABLE_USE -> OnjVariableUsePsi(node)
-            NEGATION -> OnjNegation(node)
+            NEGATION -> OnjNegationPsi(node)
             CONVERSION -> OnjConversionPsi(node)
             BINARY_OPERATION -> OnjConversionPsi(node)
             INFIX_FUNCTION_CALL -> OnjInfixFunctionCallPsi(node)

@@ -16,17 +16,9 @@ object OnjTokenSets {
         OnjTypes.PLUS, OnjTypes.MINUS, OnjTypes.STAR, OnjTypes.DIV, OnjTypes.HASH, OnjTypes.DOLLAR
     )
 
-    val binaryOperators: TokenSet = TokenSet.create(
-        OnjTypes.PLUS, OnjTypes.MINUS, OnjTypes.STAR, OnjTypes.DIV
-    )
-
     val keywords: TokenSet = TokenSet.create(
         OnjTypes.USE, OnjTypes.IMPORT, OnjTypes.VAR
     )
-
-//        val calledNames: TokenSet = TokenSet.create(
-//            OnjTypes.NAMED_OBJECT_NAME, OnjTypes.FUNCTION_NAME, OnjTypes.VARIABLE_EXPRESSION
-//        )
 
     val parens: TokenSet = TokenSet.create(OnjTypes.L_PAREN, OnjTypes.R_PAREN)
     val braces: TokenSet = TokenSet.create(OnjTypes.L_BRACE, OnjTypes.R_BRACE)

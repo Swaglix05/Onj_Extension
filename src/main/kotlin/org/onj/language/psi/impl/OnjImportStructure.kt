@@ -8,7 +8,7 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.OnjVariableDeclaringPsiElement
-import org.onj.language.reference.OnjSymbol
+import org.onj.language.symbols.OnjSymbol
 
 class OnjImportStructurePsi(node: ASTNode) : OnjVariableDeclaringPsiElement(node) {
 
