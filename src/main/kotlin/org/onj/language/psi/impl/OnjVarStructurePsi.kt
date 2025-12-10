@@ -1,6 +1,7 @@
 package org.onj.language.psi.impl
 
 import com.intellij.lang.ASTNode
+import com.intellij.model.Pointer
 import com.intellij.model.Symbol
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.TextRange
@@ -20,9 +21,8 @@ class OnjVarStructurePsi(node: ASTNode) : OnjVariableDeclaringPsiElement(node) {
         return childNode.psi
     }
 
-
-
     override fun getDeclaringElement(): PsiElement {
+        println("getDeclaringElement")
         return nameIdentifier!!
     }
 
@@ -32,7 +32,8 @@ class OnjVarStructurePsi(node: ASTNode) : OnjVariableDeclaringPsiElement(node) {
     }
 
     override fun getSymbol(): Symbol {
-        return OnjSymbol(containingFile, nameIdentifier?.text ?: "")
+        println("getSymbol")
+        return OnjSymbol(this)
     }
 
 }

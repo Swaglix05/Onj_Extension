@@ -32,7 +32,7 @@ class OnjImportStructurePsi(node: ASTNode) : OnjVariableDeclaringPsiElement(node
     }
 
     override fun getSymbol(): Symbol {
-        return OnjSymbol(containingFile, nameIdentifier?.text ?: "")
+        return OnjSymbol(this)
     }
 }
 
