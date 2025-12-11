@@ -56,10 +56,10 @@
 <!--        <psi.referenceContributor-->
 <!--                language="Onj"-->
 <!--                implementation="org.onj.language.reference.OnjReferenceContributor"/>-->
-<!--        <lang.findUsagesProvider-->
-<!--                language="Onj"-->
-<!--                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"-->
-<!--        />-->
+        <lang.findUsagesProvider
+                language="Onj"
+                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"
+        />
 <!--        <findUsagesHandlerFactory implementation="org.onj.language.reference.OnjFindUsagesHandlerFactory" />-->
         <lang.foldingBuilder
                 language="Onj"

@@ -1,7 +1,6 @@
 package org.onj.language.psi
 
 import com.intellij.psi.tree.TokenSet
-import org.onj.language.psi.OnjTypes
 
 object OnjTokenSets {
 
@@ -18,6 +17,10 @@ object OnjTokenSets {
 
     val keywords: TokenSet = TokenSet.create(
         OnjTypes.USE, OnjTypes.IMPORT, OnjTypes.VAR
+    )
+
+    val possibleUsage: TokenSet = TokenSet.create(
+        OnjTypes.IDENTIFIER
     )
 
     val parens: TokenSet = TokenSet.create(OnjTypes.L_PAREN, OnjTypes.R_PAREN)
