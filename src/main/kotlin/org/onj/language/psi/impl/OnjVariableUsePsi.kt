@@ -31,7 +31,6 @@ class OnjVariableUsePsi(node: ASTNode) : ASTWrapperPsiElement(node), Navigatable
     }
 
     override fun getReference(): PsiReference {
-        println("getReference")
         return reference
     }
 

@@ -24,7 +24,6 @@ class NewOnjParser : PsiParser {
     private fun parseTopLevel(builder: PsiBuilder) {
         var allowKeyValue = true
         while (!builder.eof()) {
-//            println("top level: ${builder.next()}")
             val result = when {
                 builder.nextIs(OnjTypes.IMPORT) -> parseImport(builder)
                 builder.nextIs(OnjTypes.USE) -> parseUse(builder)
@@ -63,7 +62,6 @@ class NewOnjParser : PsiParser {
             }
             if (result) continue
             while (!builder.eof()) {
-//                println("recover: ${builder.next()}")
                 if (builder.nextIsOneOf(OnjTypes.IMPORT, OnjTypes.VAR, OnjTypes.USE, OnjTypes.IDENTIFIER)) {
                     break
                 }
@@ -195,6 +193,7 @@ class NewOnjParser : PsiParser {
             useMark.done(OnjTypes.USE_STRUCTURE)
             return false
         }
+        builder.advanceLexer()
         useMark.done(OnjTypes.USE_STRUCTURE)
         return true
     }

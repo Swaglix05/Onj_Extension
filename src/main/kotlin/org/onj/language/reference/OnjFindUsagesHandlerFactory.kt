@@ -17,7 +17,6 @@ import org.onj.language.psi.OnjVariableDeclaringPsiElement
 class OnjFindUsagesHandlerFactory : FindUsagesHandlerFactory() {
 
     override fun canFindUsages(p0: PsiElement): Boolean {
-        println("canFindUsages from OnjFindUsagesHandlerFactory")
         return p0 is OnjVariableDeclaringPsiElement
     }
 
@@ -37,7 +36,6 @@ class OnjFindUsageHandler(psiElement: PsiElement) : FindUsagesHandler(psiElement
         processor: Processor<in UsageInfo>,
         options: FindUsagesOptions
     ): Boolean {
-        println("hiiiiiiiiiiii")
         return super.processElementUsages(element, processor, options)
     }
 

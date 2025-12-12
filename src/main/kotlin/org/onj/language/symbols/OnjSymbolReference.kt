@@ -14,7 +14,6 @@ import org.onj.language.psi.OnjVariableDeclaringPsiElement
 class OnjSymbolReference(val referencingElement: PsiElement) : SingleTargetReference(), PsiSymbolReference {
 
     override fun resolveSingleTarget(): Symbol? {
-        println("resolve symbol")
         val referencedVariable = referencingElement.text
 
         fun search(root: OnjCanHaveVariableDeclaration): Symbol? {

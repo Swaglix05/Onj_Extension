@@ -13,10 +13,8 @@ class OnjPsiReferenceBySymbolReferenceWrapper(
 ) : PsiReferenceBase<PsiElement>(elementWithSymbol) {
 
     override fun resolve(): PsiElement? {
-        println("resolve in wrapper")
         val result = elementWithSymbol.ownReferences.firstOrNull()?.resolveReference()?.firstOrNull() ?: return null
         if (result !is OnjSymbol) return null
-        println(result.psiElement)
         return result.psiElement
     }
 

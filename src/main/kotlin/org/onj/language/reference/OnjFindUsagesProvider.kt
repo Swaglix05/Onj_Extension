@@ -14,7 +14,6 @@ import org.onj.language.psi.OnjVariableDeclaringPsiElement
 class OnjFindUsagesProvider : FindUsagesProvider {
 
     override fun canFindUsagesFor(p0: PsiElement): Boolean {
-        println("canFindUsages from OnjUsagesProvider")
         return p0 is OnjVariableDeclaringPsiElement
     }
 
@@ -30,10 +29,9 @@ class OnjFindUsagesProvider : FindUsagesProvider {
     override fun getNodeText(
         p0: PsiElement,
         p1: Boolean
-    ): @Nls String = (p0.text).also { println("getNodeText: ${p0.text}") }
+    ): @Nls String = (p0.text)
 
     override fun getWordsScanner(): WordsScanner {
-        println("words scanner")
         return DefaultWordsScanner(
             object : FlexAdapter(OnjLexer(null)) {},
             OnjTokenSets.possibleUsage, OnjTokenSets.comments,

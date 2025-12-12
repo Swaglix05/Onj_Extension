@@ -30,7 +30,6 @@ class OnjFileIncludeProvider : FileIncludeProvider() {
             .psiFile
             .childrenOfType<OnjImportStructurePsi>()
             .mapNotNull { it.resolveToFile()?.canonicalPath }
-            .onEach { println(it) }
             .map { path -> FileIncludeInfo(path) }
             .toTypedArray()
     }

@@ -39,13 +39,11 @@ class OnjAnnotator : Annotator {
             val query = ReferencesSearch.search(element)
             val anyUsages = query.any()
             if (!anyUsages && element.name != "_") {
-                println("unused: ${element.text}")
                 val annotationBuilder = holder
                     .newAnnotation(HighlightSeverity.INFORMATION, "Unused variable")
                     .range(element)
                     .highlightType(ProblemHighlightType.LIKE_UNUSED_SYMBOL)
                 if (element.parent !is OnjImportStructurePsi) {
-                    println("add quick fix")
                     annotationBuilder
                         .newFix(DeleteUnusedQuickFix(element))
                         .registerFix()

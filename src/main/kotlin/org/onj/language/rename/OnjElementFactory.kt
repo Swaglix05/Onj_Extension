@@ -9,6 +9,23 @@ import org.onj.language.psi.OnjTypes
 
 object OnjElementFactory {
 
+    fun createOnjString(project: Project, content: String): PsiElement {
+        val new = content
+            .replace("\n", "\\n")
+            .replace("\r", "\\r")
+            .replace("\t", "\\t")
+            .replace("\"", "\\\"")
+            .replace("'", "\\'")
+            .replace("\\", "\\\\")
+        val text = "k: \"$new\""
+        val file = createFile(project, text)
+        return file
+            .node
+            .findChildByType(OnjTypes.KEY_VALUE_PAIR)!!
+            .findChildByType(OnjTypes.STRING)!!
+            .psi
+    }
+
     fun createOnjIdentifier(project: Project, name: String): PsiElement {
         val text = "k: $name"
         val file = createFile(project, text)

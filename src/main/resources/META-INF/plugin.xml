@@ -81,5 +81,8 @@
                 implementation="org.onj.language.symbols.OnjIconProvider"/>
         <include.provider
                 implementation="org.onj.language.OnjFileIncludeProvider"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjPathCompletionContributor"/>
     </extensions>
 </idea-plugin>
