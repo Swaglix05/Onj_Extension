@@ -5,6 +5,8 @@ package org.onj.language.psi
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.model.psi.PsiSymbolDeclaration
+import com.intellij.navigation.ItemPresentation
+import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiNameIdentifierOwner
 
@@ -15,3 +17,5 @@ interface OnjCanHaveVariableDeclaration : PsiElement
 interface OnjRenamableVariableReference : PsiElement {
     fun rename(newName: String)
 }
+
+interface OnjInStructureView : PsiElement, NavigatablePsiElement

@@ -38,7 +38,7 @@ class OnjAnnotator : Annotator {
             element as OnjVariableDeclNamePsi
             val query = ReferencesSearch.search(element)
             val anyUsages = query.any()
-            if (!anyUsages) {
+            if (!anyUsages && element.name != "_") {
                 println("unused: ${element.text}")
                 val annotationBuilder = holder
                     .newAnnotation(HighlightSeverity.INFORMATION, "Unused variable")
@@ -54,6 +54,21 @@ class OnjAnnotator : Annotator {
             } else {
                 annotateWithAttribute(element, holder, OnjSyntaxHighlighter.VARIABLE_NAME_HIGHLIGHTING)
             }
+        }
+
+        OnjTypes.IMPORT_PATH -> {
+            val parent = element.parent
+            if (parent is OnjImportStructurePsi) {
+                val file = parent.resolveToFile()
+                if (file != null && !file.exists()) {
+                    holder
+                        .newAnnotation(HighlightSeverity.ERROR, "File not found")
+                        .range(element)
+                        .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+                        .create()
+                }
+            }
+            Unit
         }
 
         OnjTypes.NAMED_OBJECT_NAME ->

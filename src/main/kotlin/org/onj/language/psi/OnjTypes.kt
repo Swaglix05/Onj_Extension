@@ -14,6 +14,7 @@ import org.onj.language.psi.impl.OnjFloatPsi
 import org.onj.language.psi.impl.OnjFunctionCallPsi
 import org.onj.language.psi.impl.OnjFunctionNamePsi
 import org.onj.language.psi.impl.OnjGroupedValuePsi
+import org.onj.language.psi.impl.OnjImportPathPsi
 import org.onj.language.psi.impl.OnjImportStructurePsi
 import org.onj.language.psi.impl.OnjInfixFunctionCallPsi
 import org.onj.language.psi.impl.OnjIntPsi
@@ -62,6 +63,7 @@ object OnjTypes {
     @JvmField val VARIABLE_ACCESSOR: IElementType = OnjElementType("VARIABLE_ACCESSOR")
     @JvmField val CONVERSION_NAME: IElementType = OnjElementType("CONVERSION_NAME")
     @JvmField val ARRAY_ENTRY: IElementType = OnjElementType("ARRAY_ENTRY")
+    @JvmField val IMPORT_PATH: IElementType = OnjElementType("IMPORT_PATH")
 
     @JvmField val BLOCK_COMMENT: IElementType = OnjTokenType("BLOCK_COMMENT")
     @JvmField val COLON: IElementType = OnjTokenType("COLON")
@@ -125,6 +127,7 @@ object OnjTypes {
             VARIABLE_ACCESSOR -> OnjVariableAccessorPsi(node)
             CONVERSION_NAME -> OnjConversionNamePsi(node)
             ARRAY_ENTRY -> OnjArrayEntryPsi(node)
+            IMPORT_PATH -> OnjImportPathPsi(node)
             else -> throw RuntimeException("unknown node type ${node.elementType}")
         }
     }

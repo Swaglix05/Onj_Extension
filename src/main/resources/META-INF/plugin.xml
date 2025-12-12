@@ -74,5 +74,12 @@
         <lang.refactoringSupport
                 language="Onj"
                 implementationClass="org.onj.language.OnjRefactoringSupportProvider"/>
+        <lang.psiStructureViewFactory
+                language="Onj"
+                implementationClass="org.onj.language.structureView.OnjStructureViewFactory"/>
+        <iconProvider
+                implementation="org.onj.language.symbols.OnjIconProvider"/>
+        <include.provider
+                implementation="org.onj.language.OnjFileIncludeProvider"/>
     </extensions>
 </idea-plugin>

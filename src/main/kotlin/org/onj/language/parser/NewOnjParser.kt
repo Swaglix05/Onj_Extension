@@ -207,11 +207,14 @@ class NewOnjParser : PsiParser {
         }
         val importMark = builder.mark()
         builder.advanceLexer()
+        val importPathMark = builder.mark()
         val result = parseLiteral(builder)
         if (!result) {
+            importPathMark.drop()
             importMark.drop()
             return false
         }
+        importPathMark.done(OnjTypes.IMPORT_PATH)
         if (builder.nextIsNot(OnjTypes.IDENTIFIER) && builder.tokenText == "as") {
             builder.advanceLexer()
             builder.error("Expected: 'as'")

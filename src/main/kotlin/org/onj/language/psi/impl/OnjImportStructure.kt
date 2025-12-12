@@ -2,39 +2,28 @@ package org.onj.language.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
-import com.intellij.model.Symbol
-import com.intellij.openapi.util.NlsSafe
-import com.intellij.openapi.util.TextRange
-import com.intellij.psi.PsiElement
 import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjTypes
-import org.onj.language.psi.OnjVariableDeclaringPsiElement
-import org.onj.language.symbols.OnjSymbol
+import java.io.File
+import kotlin.io.path.Path
 
 class OnjImportStructurePsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVariableDeclaration {
 
-//    override fun setName(p0: @NlsSafe String): PsiElement? {
-//        TODO()
-//    }
-//
-//    override fun getNameIdentifier(): PsiElement? {
-//        val childNode = node.findChildByType(OnjTypes.VARIABLE_DECL_NAME) ?: return null
-//        return childNode.psi
-//    }
-//
-//
-//    override fun getDeclaringElement(): PsiElement {
-//        return nameIdentifier!!
-//    }
-//
-//    override fun getRangeInDeclaringElement(): TextRange {
-//        val name = nameIdentifier ?: return TextRange(0, 0)
-//        return TextRange(0, name.textLength)
-//    }
-//
-//    override fun getSymbol(): Symbol {
-//        return OnjSymbol(this)
-//    }
+    fun getImportedPath(): String? {
+        val strPsi = node
+            .findChildByType(OnjTypes.IMPORT_PATH)
+            ?.findChildByType(OnjTypes.STRING)
+            ?.psi
+        if (strPsi !is OnjStringPsi) return null
+        return strPsi.literalString()
+    }
+
+    fun resolveToFile(): File? {
+        val path = getImportedPath() ?: return null
+        return containingFile?.virtualFile?.canonicalPath?.let { Path(it).parent.resolve(path).toFile() }
+    }
+
 }
 
 class OnjAsContextDependentKeywordPsi(node: ASTNode) : ASTWrapperPsiElement(node)
+class OnjImportPathPsi(node: ASTNode) : ASTWrapperPsiElement(node)
