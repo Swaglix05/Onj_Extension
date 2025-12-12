@@ -1,12 +1,19 @@
 package org.onj.language.highlighting
 
+import com.intellij.codeInsight.intention.CommonIntentionAction
+import com.intellij.codeInspection.ProblemHighlightType
+import com.intellij.featureStatistics.FeatureUsageEvent
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
 import com.intellij.openapi.editor.colors.TextAttributesKey
 import com.intellij.psi.PsiElement
+import com.intellij.psi.search.searches.ReferencesSearch
 import com.intellij.psi.util.elementType
 import org.onj.language.psi.OnjTypes
+import org.onj.language.psi.impl.OnjImportStructurePsi
+import org.onj.language.psi.impl.OnjVariableDeclNamePsi
+import org.onj.language.quickFixes.DeleteUnusedQuickFix
 
 class OnjAnnotator : Annotator {
 
@@ -27,8 +34,27 @@ class OnjAnnotator : Annotator {
         OnjTypes.VARIABLE_USE ->
             annotateWithAttribute(element, holder, OnjSyntaxHighlighter.VARIABLE_NAME_HIGHLIGHTING)
 
-        OnjTypes.VARIABLE_DECL_NAME ->
-            annotateWithAttribute(element, holder, OnjSyntaxHighlighter.VARIABLE_NAME_HIGHLIGHTING)
+        OnjTypes.VARIABLE_DECL_NAME -> {
+            element as OnjVariableDeclNamePsi
+            val query = ReferencesSearch.search(element)
+            val anyUsages = query.any()
+            if (!anyUsages) {
+                println("unused: ${element.text}")
+                val annotationBuilder = holder
+                    .newAnnotation(HighlightSeverity.INFORMATION, "Unused variable")
+                    .range(element)
+                    .highlightType(ProblemHighlightType.LIKE_UNUSED_SYMBOL)
+                if (element.parent !is OnjImportStructurePsi) {
+                    println("add quick fix")
+                    annotationBuilder
+                        .newFix(DeleteUnusedQuickFix(element))
+                        .registerFix()
+                }
+                annotationBuilder.create()
+            } else {
+                annotateWithAttribute(element, holder, OnjSyntaxHighlighter.VARIABLE_NAME_HIGHLIGHTING)
+            }
+        }
 
         OnjTypes.NAMED_OBJECT_NAME ->
             annotateWithAttribute(element, holder, OnjSyntaxHighlighter.NAMED_OBJECT_NAME_HIGHLIGHTING)

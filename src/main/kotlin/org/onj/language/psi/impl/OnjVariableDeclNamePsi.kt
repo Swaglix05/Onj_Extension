@@ -40,6 +40,11 @@ class OnjVariableDeclNamePsi(node: ASTNode) : OnjVariableDeclaringPsiElement(nod
         return TextRange(0, name.textLength)
     }
 
+    override fun delete() {
+        val stmt = parent
+        stmt.parent.node.removeChild(stmt.node)
+    }
+
     override fun getSymbol(): Symbol {
         return OnjSymbol(this)
     }

@@ -53,32 +53,26 @@
         <annotator
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjAnnotator"/>
-<!--        <psi.referenceContributor-->
-<!--                language="Onj"-->
-<!--                implementation="org.onj.language.reference.OnjReferenceContributor"/>-->
         <lang.findUsagesProvider
                 language="Onj"
-                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"
-        />
-<!--        <findUsagesHandlerFactory implementation="org.onj.language.reference.OnjFindUsagesHandlerFactory" />-->
+                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"/>
         <lang.foldingBuilder
                 language="Onj"
                 implementationClass="org.onj.language.OnjFoldingDescriptor"/>
-
-<!--        <iconProvider implementation="org.onj.language.symbols.OnjIconProvider"/>-->
-
-<!--        <gotoSymbolContributor-->
-<!--                implementation="org.onj.language.symbols.OnjChooseByNameContributor"/> &lt;!&ndash;This doesn't work&ndash;&gt;-->
-<!--        <psi.declarationProvider-->
-<!--                implementation="org.onj.language.symbols.OnjSymbolDeclarationProvider"/>-->
         <lang.formatter
-            language="Onj"
-            implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>
+                language="Onj"
+                implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>
         <lang.braceMatcher
-            language="Onj"
-            implementationClass="org.onj.language.OnjPairedBracesMatcher"/>
+                language="Onj"
+                implementationClass="org.onj.language.OnjPairedBracesMatcher"/>
+        <lang.quoteHandler
+                language="Onj"
+                implementationClass="org.onj.language.OnjQuoteHandler"/>
         <lang.commenter
-            language="Onj"
-            implementationClass="org.onj.language.OnjCommenter"/>
+                language="Onj"
+                implementationClass="org.onj.language.OnjCommenter"/>
+        <lang.refactoringSupport
+                language="Onj"
+                implementationClass="org.onj.language.OnjRefactoringSupportProvider"/>
     </extensions>
 </idea-plugin>
