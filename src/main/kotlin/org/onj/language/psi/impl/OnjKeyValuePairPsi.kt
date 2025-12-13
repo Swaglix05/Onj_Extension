@@ -2,15 +2,31 @@ package org.onj.language.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
+import com.intellij.lang.tree.util.children
 import com.intellij.navigation.ItemPresentation
 import com.intellij.openapi.util.NlsSafe
 import org.onj.language.psi.OnjInStructureView
 import org.onj.language.psi.OnjTypes
+import org.onj.language.typeResolution.OnjTypeResolvablePsi
 import javax.swing.Icon
 
 class OnjKeyValuePairPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjInStructureView {
 
     fun getKey(): OnjKeyPsi = node.findChildByType(OnjTypes.KEY)!!.psi as OnjKeyPsi
+
+    fun getValue(): OnjTypeResolvablePsi? {
+        var sawColon = false
+        node.children().forEach { child ->
+            if (child.elementType == OnjTypes.COLON) {
+                sawColon = true
+                return@forEach
+            }
+            if (!sawColon) return@forEach
+            val psi = child.psi
+            if (psi is OnjTypeResolvablePsi) return psi
+        }
+        return null
+    }
 
     override fun getPresentation(): ItemPresentation = object : ItemPresentation {
 

@@ -7,6 +7,7 @@ import org.onj.language.psi.impl.OnjAccessPsi
 import org.onj.language.psi.impl.OnjArrayEntryPsi
 import org.onj.language.psi.impl.OnjArrayPsi
 import org.onj.language.psi.impl.OnjAsContextDependentKeywordPsi
+import org.onj.language.psi.impl.OnjBinaryOperationPsi
 import org.onj.language.psi.impl.OnjConversionNamePsi
 import org.onj.language.psi.impl.OnjConversionPsi
 import org.onj.language.psi.impl.OnjFilePsi
@@ -112,7 +113,7 @@ object OnjTypes {
             VARIABLE_USE -> OnjVariableUsePsi(node)
             NEGATION -> OnjNegationPsi(node)
             CONVERSION -> OnjConversionPsi(node)
-            BINARY_OPERATION -> OnjConversionPsi(node)
+            BINARY_OPERATION -> OnjBinaryOperationPsi(node)
             INFIX_FUNCTION_CALL -> OnjInfixFunctionCallPsi(node)
             TRIPLE_DOT -> OnjTripleDotPsi(node)
             KEY_VALUE_PAIR -> OnjKeyValuePairPsi(node)

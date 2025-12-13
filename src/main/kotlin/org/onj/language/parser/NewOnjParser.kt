@@ -365,11 +365,15 @@ class NewOnjParser : PsiParser {
         while (builder.nextIs(OnjTypes.DOT)) {
             builder.advanceLexer()
             val accessorMarker = builder.mark()
-            val result = parseLiteral(builder)
-            if (!result) {
-                accessorMarker.drop()
-                currentMarker.drop()
-                return false
+            if (builder.nextIs(OnjTypes.IDENTIFIER)) {
+                builder.advanceLexer()
+            } else {
+                val result = parseLiteral(builder)
+                if (!result) {
+                    accessorMarker.drop()
+                    currentMarker.drop()
+                    return false
+                }
             }
             accessorMarker.done(OnjTypes.VARIABLE_ACCESSOR)
             currentMarker.done(OnjTypes.ACCESS)

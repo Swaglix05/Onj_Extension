@@ -14,11 +14,34 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.reference.OnjPsiReferenceBySymbolReferenceWrapper
 import org.onj.language.rename.OnjElementFactory
 import org.onj.language.symbols.OnjSymbolReference
+import org.onj.language.typeResolution.OnjType
+import org.onj.language.typeResolution.OnjTypeResolvablePsi
 import java.util.Collections
 
-class OnjVariableUsePsi(node: ASTNode) : ASTWrapperPsiElement(node), NavigatablePsiElement, OnjRenamableVariableReference, PsiReference {
+class OnjVariableUsePsi(
+    node: ASTNode
+) : ASTWrapperPsiElement(node), NavigatablePsiElement,
+    OnjRenamableVariableReference, PsiReference, OnjTypeResolvablePsi {
 
     private val reference = OnjPsiReferenceBySymbolReferenceWrapper(this)
+
+    override fun resolveTypeSimple(): OnjType {
+        val target = reference.resolve()
+        if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
+        val parent = target.parent
+        if (parent is OnjImportStructurePsi) return OnjType.SomeObject
+        if (parent !is OnjVarStructurePsi) return OnjType.Unknown
+        return parent.simpleDeclarationType()
+    }
+
+    override fun resolveTypeFull(): OnjType {
+        val target = reference.resolve()
+        if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
+        val parent = target.parent
+        if (parent is OnjImportStructurePsi) return OnjType.SomeObject
+        if (parent !is OnjVarStructurePsi) return OnjType.Unknown
+        return parent.fullDeclarationType()
+    }
 
     override fun rename(newName: String) {
         val oldIdentifier = node.findChildByType(OnjTypes.IDENTIFIER) ?: return

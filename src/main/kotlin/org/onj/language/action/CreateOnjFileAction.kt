@@ -22,7 +22,12 @@ class CreateOnjFileAction : AnAction() {
         val file = e.getData(CommonDataKeys.VIRTUAL_FILE)
         val name = Messages.showInputDialog("Name for onj file", "New Onj File", Messages.getQuestionIcon())
         WriteAction.compute<Unit, Throwable> {
-            file!!.createChildData(null, "$name.onj")
+            val fileName = when {
+                name == null -> "file.onj"
+                name.endsWith("onj") -> name
+                else -> "$name.onj"
+            }
+            file!!.createChildData(null, fileName)
         }
     }
 

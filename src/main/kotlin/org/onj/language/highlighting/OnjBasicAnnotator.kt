@@ -1,8 +1,6 @@
 package org.onj.language.highlighting
 
-import com.intellij.codeInsight.intention.CommonIntentionAction
 import com.intellij.codeInspection.ProblemHighlightType
-import com.intellij.featureStatistics.FeatureUsageEvent
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
@@ -14,8 +12,11 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjImportStructurePsi
 import org.onj.language.psi.impl.OnjVariableDeclNamePsi
 import org.onj.language.quickFixes.DeleteUnusedQuickFix
+import org.onj.language.typeResolution.OnjType
+import org.onj.language.typeResolution.OnjTypeResolvablePsi
+import org.onj.language.utils.Utils.findInstance
 
-class OnjAnnotator : Annotator {
+class OnjBasicAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) = when (element.elementType) {
 

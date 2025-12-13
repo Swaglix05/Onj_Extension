@@ -11,32 +11,18 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.OnjVariableDeclaringPsiElement
 import org.onj.language.rename.OnjElementFactory
 import org.onj.language.symbols.OnjSymbol
+import org.onj.language.typeResolution.OnjType
+import org.onj.language.typeResolution.OnjTypeResolvablePsi
+import org.onj.language.utils.Utils.findInstance
 
 class OnjVarStructurePsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVariableDeclaration {
 
-//    override fun setName(p0: @NlsSafe String): PsiElement {
-//        val name = nameIdentifier ?: return this
-//        val newName = OnjElementFactory.createOnjVariableDeclaration(project, p0)
-//        node.replaceChild(name.node, newName.node)
-//        return this
-//    }
-//
-//    override fun getNameIdentifier(): PsiElement? {
-//        val childNode = node.findChildByType(OnjTypes.VARIABLE_DECL_NAME) ?: return null
-//        return childNode.psi
-//    }
-//
-//    override fun getDeclaringElement(): PsiElement {
-//        return nameIdentifier!!
-//    }
-//
-//    override fun getRangeInDeclaringElement(): TextRange {
-//        val name = nameIdentifier ?: return TextRange(0, 0)
-//        return TextRange(0, name.textLength)
-//    }
-//
-//    override fun getSymbol(): Symbol {
-//        return OnjSymbol(this)
-//    }
+    fun simpleDeclarationType(): OnjType {
+        return children.findInstance<OnjTypeResolvablePsi>()?.resolveTypeSimple() ?: OnjType.Unknown
+    }
+
+    fun fullDeclarationType(): OnjType {
+        return children.findInstance<OnjTypeResolvablePsi>()?.resolveTypeFull() ?: OnjType.Unknown
+    }
 
 }

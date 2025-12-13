@@ -52,7 +52,10 @@
                 implementationClass="org.onj.language.highlighting.OnjSyntaxHighlighterFactory"/>
         <annotator
                 language="Onj"
-                implementationClass="org.onj.language.highlighting.OnjAnnotator"/>
+                implementationClass="org.onj.language.highlighting.OnjBasicAnnotator"/>
+        <annotator
+                language="Onj"
+                implementationClass="org.onj.language.highlighting.OnjTypeBasedAnnotator"/>
         <lang.findUsagesProvider
                 language="Onj"
                 implementationClass="org.onj.language.reference.OnjFindUsagesProvider"/>

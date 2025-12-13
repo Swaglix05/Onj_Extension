@@ -38,4 +38,14 @@ object Utils {
         }
     }
 
+    inline fun <reified T> Iterable<*>.findInstance(): T? {
+        forEach { if (it is T) return it }
+        return null
+    }
+
+    inline fun <reified T> Array<*>.findInstance(): T? {
+        forEach { if (it is T) return it }
+        return null
+    }
+
 }
