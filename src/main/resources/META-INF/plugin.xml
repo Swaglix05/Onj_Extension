@@ -84,5 +84,14 @@
         <completion.contributor
                 language="Onj"
                 implementationClass="org.onj.language.autocomplete.OnjPathCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjVariableCompletionContributor"/>
     </extensions>
+    <actions>
+        <action id="org.onj.language.action.CreateOnjFileAction" class="org.onj.language.action.CreateOnjFileAction"
+                text="Onj File" description="Create new onj file">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+    </actions>
 </idea-plugin>

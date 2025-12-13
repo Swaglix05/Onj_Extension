@@ -29,7 +29,7 @@ class OnjPathCompletionContributor : CompletionContributor() {
                 PlatformPatterns.psiElement(OnjTypes.STRING_ESCAPE).withSuperParent(2, PlatformPatterns.psiElement(OnjTypes.IMPORT_PATH)),
                 PlatformPatterns.psiElement(OnjTypes.INVALID_STRING_ESCAPE).withSuperParent(2, PlatformPatterns.psiElement(OnjTypes.IMPORT_PATH)),
             ),
-            OnjPathCompletionProvider()
+            OnjVariableCompletionProvider()
         )
     }
 
@@ -114,8 +114,10 @@ class OnjPathLookupElement(
         var newPath = pathString()
         if (isDirectory) newPath += "/"
         importPath.replacePathString(newPath)
-        val caret = context.editor.caretModel.primaryCaret
-        caret.moveCaretRelatively(1, 0, false, false)
+        if (isDirectory) {
+            val caret = context.editor.caretModel.primaryCaret
+            caret.moveCaretRelatively(1, 0, false, false)
+        }
     }
 
 }
