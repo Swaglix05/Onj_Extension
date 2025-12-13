@@ -26,6 +26,7 @@ import org.onj.language.psi.impl.OnjNamedObjectPsi
 import org.onj.language.psi.impl.OnjNegationPsi
 import org.onj.language.psi.impl.OnjObjectPsi
 import org.onj.language.psi.impl.OnjStringPsi
+import org.onj.language.psi.impl.OnjTopLevelPsi
 import org.onj.language.psi.impl.OnjTripleDotPsi
 import org.onj.language.psi.impl.OnjUseStructurePsi
 import org.onj.language.psi.impl.OnjVarStructurePsi
@@ -36,6 +37,7 @@ import org.onj.language.psi.impl.OnjVariableUsePsi
 object OnjTypes {
 
     @JvmField val FILE: IElementType = OnjElementType("FILE")
+    @JvmField val TOP_LEVEL: IElementType = OnjElementType("TOP_LEVEL")
     @JvmField val INT_LITERAL: IElementType = OnjElementType("INT_LITERAL")
     @JvmField val FLOAT_LITERAL: IElementType = OnjElementType("FLOAT_LITERAL")
     @JvmField val STRING: IElementType = OnjElementType("STRING")
@@ -104,6 +106,7 @@ object OnjTypes {
             INT_LITERAL -> OnjIntPsi(node)
             FLOAT_LITERAL -> OnjFloatPsi(node)
             FILE -> OnjFilePsi(node)
+            TOP_LEVEL -> OnjTopLevelPsi(node)
             IMPORT_STRUCTURE -> OnjImportStructurePsi(node)
             AS_CONTEXT_DEPENDENT_KEYWORD -> OnjAsContextDependentKeywordPsi(node)
             USE_STRUCTURE -> OnjUseStructurePsi(node)

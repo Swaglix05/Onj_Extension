@@ -15,7 +15,9 @@ class NewOnjParser : PsiParser {
         builder.setDebugMode(true)
 
         val fileMarker = builder.mark()
+        val topLevelMarker = builder.mark()
         parseTopLevel(builder)
+        topLevelMarker.done(OnjTypes.TOP_LEVEL)
         fileMarker.done(OnjTypes.FILE)
 
         return builder.treeBuilt
