@@ -2,23 +2,23 @@ package org.onj.language.typeResolution
 
 import org.onj.language.psi.impl.OnjKeyValuePairPsi
 
-sealed class OnjType {
+sealed class OnjType(val printableName: String) {
 
-    object SomeStr : OnjType()
-    object SomeInt : OnjType()
-    object SomeFloat : OnjType()
-    object SomeBool : OnjType()
-    object SomeObject : OnjType()
-    object SomeArray : OnjType()
-    object Unknown : OnjType()
-    object Null : OnjType()
+    object SomeStr : OnjType("string")
+    object SomeInt : OnjType("int")
+    object SomeFloat : OnjType("float")
+    object SomeBool : OnjType("boolean")
+    object SomeObject : OnjType("{...}")
+    object SomeArray : OnjType("[...]")
+    object Unknown : OnjType("*")
+    object Null : OnjType("null")
 
-    class SpecificStr(val value: String) : OnjType()
-    class SpecificInt(val value: Long) : OnjType()
-    class SpecificFloat(val value: Double) : OnjType()
-    class SpecificBool(val value: Boolean) : OnjType()
-    class SpecificObject(val keys: Map<String, OnjType>, val backingPsi: Map<String, OnjKeyValuePairPsi>) : OnjType()
-    class SpecificArray(val elements: List<OnjType>) : OnjType()
+    class SpecificStr(val value: String) : OnjType("string")
+    class SpecificInt(val value: Long) : OnjType("int")
+    class SpecificFloat(val value: Double) : OnjType("float")
+    class SpecificBool(val value: Boolean) : OnjType("boolean")
+    class SpecificObject(val keys: Map<String, OnjType>, val backingPsi: Map<String, OnjKeyValuePairPsi>) : OnjType("{...}")
+    class SpecificArray(val elements: List<OnjType>) : OnjType("[...]")
 
 
     fun isArray(): Boolean = this is SomeArray || this is SpecificArray
@@ -41,4 +41,6 @@ sealed class OnjType {
             this is Null
 
     fun isSpecific(): Boolean = !isSome() || this is Null
+
+    override fun toString(): String = printableName
 }

@@ -90,6 +90,9 @@
         <completion.contributor
                 language="Onj"
                 implementationClass="org.onj.language.autocomplete.OnjVariableCompletionContributor"/>
+        <lang.documentationProvider
+                language="Onj"
+                implementationClass="org.onj.language.documentation.OnjDocumentationProvider"/>
     </extensions>
     <actions>
         <action id="org.onj.language.action.CreateOnjFileAction" class="org.onj.language.action.CreateOnjFileAction"

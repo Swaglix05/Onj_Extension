@@ -21,6 +21,7 @@ object OnjElementFactory {
         val file = createFile(project, text)
         return file
             .node
+            .findChildByType(OnjTypes.TOP_LEVEL)!!
             .findChildByType(OnjTypes.KEY_VALUE_PAIR)!!
             .findChildByType(OnjTypes.STRING)!!
             .psi
@@ -31,6 +32,7 @@ object OnjElementFactory {
         val file = createFile(project, text)
         return file
             .node
+            .findChildByType(OnjTypes.TOP_LEVEL)!!
             .findChildByType(OnjTypes.KEY_VALUE_PAIR)!!
             .findChildByType(OnjTypes.VARIABLE_USE)!!
             .findChildByType(OnjTypes.IDENTIFIER)!!
@@ -42,6 +44,7 @@ object OnjElementFactory {
         val file = createFile(project, text)
         return file
             .node
+            .findChildByType(OnjTypes.TOP_LEVEL)!!
             .findChildByType(OnjTypes.VAR_STRUCTURE)!!
             .findChildByType(OnjTypes.VARIABLE_DECL_NAME)!!
             .psi
@@ -50,5 +53,9 @@ object OnjElementFactory {
     fun createFile(project: Project, text: String): OnjFile {
         val name = "dummy.onj"
         return PsiFileFactory.getInstance(project).createFileFromText(name, OnjFileType, text) as OnjFile
+    }
+
+    val identifierPattern: Regex by lazy {
+        Regex("[_a-zA-Z][_a-zA-Z0-9]*")
     }
 }

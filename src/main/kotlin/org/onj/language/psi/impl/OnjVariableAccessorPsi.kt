@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Unmodifiable
 import org.onj.language.psi.OnjRenamableReference
 import org.onj.language.psi.OnjTypes
 import org.onj.language.reference.OnjPsiReferenceBySymbolReferenceWrapper
+import org.onj.language.rename.OnjElementFactory
 import org.onj.language.symbols.OnjKeySymbolReference
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
@@ -39,10 +40,21 @@ class OnjVariableAccessorPsi(
     }
 
     override fun rename(newName: String) {
-        TODO("Not yet implemented")
+        val toReplace = node.findChildByType(OnjTypes.IDENTIFIER)
+            ?: children.findInstance<OnjStringPsi>()?.node
+            ?: return
+        val validIdentifier = OnjElementFactory.identifierPattern.matches(newName)
+        val newChild = if (validIdentifier) {
+            OnjElementFactory.createOnjIdentifier(project, newName)
+        } else {
+            OnjElementFactory.createOnjString(project, newName)
+        }
+        node.replaceChild(toReplace, newChild.node)
     }
 
     override fun getOwnReferences(): @Unmodifiable Collection<out PsiSymbolReference> {
+        val complexAccessor = children.findInstance<OnjTypeResolvablePsi>()
+        if (complexAccessor != null && complexAccessor !is OnjStringPsi) return listOf()
         val variableAccess = parent as OnjAccessPsi
         val accessed = variableAccess.children.findInstance<OnjTypeResolvablePsi>() ?: return listOf()
         return Collections.singletonList(OnjKeySymbolReference(accessed, this))

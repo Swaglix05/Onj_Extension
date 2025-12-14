@@ -13,6 +13,10 @@ abstract class OnjVariableDeclaringPsiElement(node: ASTNode) : ASTWrapperPsiElem
 
 interface OnjCanHaveVariableDeclaration : PsiElement
 
+interface OnjPsiElementWithDocumentation : PsiElement {
+    fun renderDoc(): String?
+}
+
 interface OnjRenamableReference : PsiElement {
     fun rename(newName: String)
 }
