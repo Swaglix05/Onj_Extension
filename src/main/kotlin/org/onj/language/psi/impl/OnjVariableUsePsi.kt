@@ -9,11 +9,11 @@ import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
 import org.jetbrains.annotations.Unmodifiable
-import org.onj.language.psi.OnjRenamableVariableReference
+import org.onj.language.psi.OnjRenamableReference
 import org.onj.language.psi.OnjTypes
 import org.onj.language.reference.OnjPsiReferenceBySymbolReferenceWrapper
 import org.onj.language.rename.OnjElementFactory
-import org.onj.language.symbols.OnjSymbolReference
+import org.onj.language.symbols.OnjVariableSymbolReference
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
 import java.util.Collections
@@ -21,7 +21,7 @@ import java.util.Collections
 class OnjVariableUsePsi(
     node: ASTNode
 ) : ASTWrapperPsiElement(node), NavigatablePsiElement,
-    OnjRenamableVariableReference, PsiReference, OnjTypeResolvablePsi {
+    OnjRenamableReference, PsiReference, OnjTypeResolvablePsi {
 
     private val reference = OnjPsiReferenceBySymbolReferenceWrapper(this)
 
@@ -50,7 +50,7 @@ class OnjVariableUsePsi(
     }
 
     override fun getOwnReferences(): @Unmodifiable Collection<out PsiSymbolReference> {
-        return Collections.singletonList(OnjSymbolReference(this))
+        return Collections.singletonList(OnjVariableSymbolReference(this))
     }
 
     override fun getReference(): PsiReference {

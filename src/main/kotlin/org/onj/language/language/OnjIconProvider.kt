@@ -1,4 +1,4 @@
-package org.onj.language.symbols
+package org.onj.language.language
 
 import com.intellij.ide.IconProvider
 import com.intellij.psi.PsiElement

@@ -46,6 +46,7 @@ class OnjBlock(
     }
 
     private fun getChildIndent(childNode: ASTNode): Indent? {
+        if (node.elementType == OnjTypes.TOP_LEVEL) return Indent.getAbsoluteNoneIndent()
         if (node.elementType == OnjTypes.OBJECT && childNode.elementType !in OnjTokenSets.braces) {
             return Indent.getNormalIndent()
         }
@@ -71,15 +72,10 @@ class OnjBlock(
     }
 
     override fun getChildIndent(): Indent? {
-        // TODO: fix this
-        if (node.elementType.debugName == "FILE") {
-            // When the file is incomplete the user probably just typed an opening bracket/brace to start an object/array
-            if (!isIncomplete) {
-                return Indent.getNoneIndent()
-            }
+        if (node.elementType == OnjTypes.OBJECT || node.elementType == OnjTypes.ARRAY) {
+            return Indent.getNormalIndent()
         }
-
-        return Indent.getNormalIndent()
+        return Indent.getNoneIndent()
     }
 
 }

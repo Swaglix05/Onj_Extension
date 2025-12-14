@@ -11,7 +11,7 @@ import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjVariableDeclaringPsiElement
 
 
-class OnjSymbolReference(val referencingElement: PsiElement) : SingleTargetReference(), PsiSymbolReference {
+class OnjVariableSymbolReference(val referencingElement: PsiElement) : SingleTargetReference(), PsiSymbolReference {
 
     override fun resolveSingleTarget(): Symbol? {
         val referencedVariable = referencingElement.text

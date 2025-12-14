@@ -1,5 +1,7 @@
 package org.onj.language.typeResolution
 
+import org.onj.language.psi.impl.OnjKeyValuePairPsi
+
 sealed class OnjType {
 
     object SomeStr : OnjType()
@@ -15,7 +17,7 @@ sealed class OnjType {
     class SpecificInt(val value: Long) : OnjType()
     class SpecificFloat(val value: Double) : OnjType()
     class SpecificBool(val value: Boolean) : OnjType()
-    class SpecificObject(val keys: Map<String, OnjType>) : OnjType()
+    class SpecificObject(val keys: Map<String, OnjType>, val backingPsi: Map<String, OnjKeyValuePairPsi>) : OnjType()
     class SpecificArray(val elements: List<OnjType>) : OnjType()
 
 

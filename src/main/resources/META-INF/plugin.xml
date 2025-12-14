@@ -81,7 +81,7 @@
                 language="Onj"
                 implementationClass="org.onj.language.structureView.OnjStructureViewFactory"/>
         <iconProvider
-                implementation="org.onj.language.symbols.OnjIconProvider"/>
+                implementation="org.onj.language.language.OnjIconProvider"/>
         <include.provider
                 implementation="org.onj.language.OnjFileIncludeProvider"/>
         <completion.contributor

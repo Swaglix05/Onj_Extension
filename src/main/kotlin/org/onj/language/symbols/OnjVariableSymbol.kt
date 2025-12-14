@@ -9,9 +9,11 @@ import com.intellij.platform.backend.navigation.NavigationTarget
 import com.intellij.platform.backend.presentation.TargetPresentation
 import com.intellij.psi.NavigatablePsiElement
 
-class OnjSymbol(val psiElement: NavigatablePsiElement) : Symbol, NavigationTarget {
+class OnjVariableSymbol(
+    override val psiElement: NavigatablePsiElement
+) : Symbol, OnjPsiElementBasedSymbol, NavigationTarget {
 
-    override fun createPointer(): Pointer<out OnjSymbol?> {
+    override fun createPointer(): Pointer<out OnjVariableSymbol?> {
         return Pointer.hardPointer(this)
     }
 
@@ -28,6 +30,6 @@ class OnjSymbol(val psiElement: NavigatablePsiElement) : Symbol, NavigationTarge
     }
 
     override fun equals(other: Any?): Boolean {
-        return other is OnjSymbol && other.psiElement == psiElement
+        return other is OnjVariableSymbol && other.psiElement == psiElement
     }
 }
