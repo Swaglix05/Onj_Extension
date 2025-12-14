@@ -74,7 +74,7 @@ class OnjSyntaxHighlighter : SyntaxHighlighterBase() {
                 .createTextAttributesKey("ONJ_ESCAPE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         )
 
-        val INVALID_ESCAPE_HIGHLIGHTING = arrayOf(
+         val INVALID_ESCAPE_HIGHLIGHTING = arrayOf(
             TextAttributesKey
                 .createTextAttributesKey("ONJ_INVALID_ESCAPE", DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE)
         )

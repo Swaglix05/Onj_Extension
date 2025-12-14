@@ -44,12 +44,24 @@
                 fieldName="INSTANCE"
                 language="Onj"
                 extensions="onj"/>
+        <fileType
+                name="Onj schema file"
+                implementationClass="org.onj.language.language.OnjSchemaFileType"
+                fieldName="INSTANCE"
+                language="OnjSchema"
+                extensions="onjschema"/>
         <lang.parserDefinition
                 language="Onj"
                 implementationClass="org.onj.language.parser.OnjParserDefinition"/>
+        <lang.parserDefinition
+                language="OnjSchema"
+                implementationClass="org.onj.language.parser.OnjSchemaParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory
+                language="OnjSchema"
+                implementationClass="org.onj.language.highlighting.OnjSchemaSyntaxHighlighterFactory"/>
         <annotator
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjBasicAnnotator"/>
