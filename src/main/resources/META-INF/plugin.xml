@@ -90,6 +90,9 @@
         <completion.contributor
                 language="Onj"
                 implementationClass="org.onj.language.autocomplete.OnjVariableCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjAccessCompletionContributor"/>
         <lang.documentationProvider
                 language="Onj"
                 implementationClass="org.onj.language.documentation.OnjDocumentationProvider"/>

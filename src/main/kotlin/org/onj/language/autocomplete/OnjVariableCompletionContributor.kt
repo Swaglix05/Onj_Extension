@@ -62,7 +62,6 @@ class OnjVariableCompletionProvider : CompletionProvider<CompletionParameters>()
 
 }
 
-
 class OnjVariableLookupElement(
     val variableDeclaration: OnjVariableDeclNamePsi
 ) : LookupElement() {

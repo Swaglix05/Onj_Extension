@@ -104,10 +104,6 @@ class NewOnjParser : PsiParser {
         }
         builder.advanceLexer()
         val result = parseValue(builder)
-        if (!result) {
-            begin.drop()
-            return false
-        }
         begin.done(OnjTypes.KEY_VALUE_PAIR)
         return true
     }
@@ -371,11 +367,6 @@ class NewOnjParser : PsiParser {
                 builder.advanceLexer()
             } else {
                 val result = parseLiteral(builder)
-                if (!result) {
-                    accessorMarker.drop()
-                    currentMarker.drop()
-                    return false
-                }
             }
             accessorMarker.done(OnjTypes.VARIABLE_ACCESSOR)
             currentMarker.done(OnjTypes.ACCESS)
@@ -442,7 +433,9 @@ class NewOnjParser : PsiParser {
             else -> {
                 val last = builder.next()
                 builder.error("Unexpected Token: '$last'; expected literal")
-                builder.advanceLexer()
+                if (!builder.nextIsOneOf(OnjTypes.COMMA, OnjTypes.SEMICOLON, OnjTypes.R_BRACE, OnjTypes.R_BRACKET)) {
+                    builder.advanceLexer()
+                }
                 false
             }
         }
