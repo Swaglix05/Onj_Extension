@@ -69,11 +69,6 @@ class OnjSchemaBasedAnnotator : Annotator {
             annotation("Expected ${typeNameForOnjSchema(schema)}", obj, holder)
             return
         }
-        println("---------------------")
-        println("match obj:")
-        println(schema.keys)
-        println(schema.optionalKeys)
-        println("---------------------")
         val missingHighlightElement = obj
             .node
             .children()
@@ -137,6 +132,11 @@ class OnjSchemaBasedAnnotator : Annotator {
     }
 
     private fun matchTypeToSchema(type: OnjType, schema: OnjSchema): String? {
+        if (type.isUnknown()) return null
+        if (type.isNull()) {
+            if (schema.nullable) return null
+            return "null not allowed here"
+        }
         return when (schema) {
             is OnjSchemaAny -> null
             is OnjSchemaFloat -> if (type.isFloat()) null else "Expected float, found: ${type.printableName}"

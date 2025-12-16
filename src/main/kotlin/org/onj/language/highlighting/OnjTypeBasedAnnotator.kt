@@ -78,14 +78,14 @@ class OnjTypeBasedAnnotator : Annotator {
             ?: return
         val type = toInclude.resolveTypeSimple()
         val parent = element.parent
-        if (parent is OnjArrayPsi && !type.isArray()) {
+        if (parent is OnjArrayPsi && !(type.isArray() || type.isUnknown())) {
             holder
                 .newAnnotation(HighlightSeverity.ERROR, "Expression must resolve to an array to be included in an array")
                 .range(toInclude)
                 .highlightType(ProblemHighlightType.GENERIC_ERROR)
                 .create()
         }
-        if ((parent is OnjObjectPsi || parent is PsiFile) && !type.isObject()) {
+        if ((parent is OnjObjectPsi || parent is PsiFile) && !(type.isObject() || type.isUnknown())) {
             holder
                 .newAnnotation(HighlightSeverity.ERROR, "Expression must resolve to an object to be included in an object")
                 .range(toInclude)

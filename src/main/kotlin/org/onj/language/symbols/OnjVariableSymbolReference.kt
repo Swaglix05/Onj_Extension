@@ -9,12 +9,22 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
 import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjVariableDeclaringPsiElement
+import org.onj.language.psi.impl.OnjFilePsi
+import org.onj.language.psi.impl.OnjTopLevelPsi
+import org.onj.language.psi.impl.OnjVarStructurePsi
+import org.onj.language.utils.Utils.findInstance
 
 
 class OnjVariableSymbolReference(val referencingElement: PsiElement) : SingleTargetReference(), PsiSymbolReference {
 
     override fun resolveSingleTarget(): Symbol? {
         val referencedVariable = referencingElement.text
+
+        var parent = referencingElement
+        while (parent.parent !is OnjTopLevelPsi) {
+            if (parent is OnjFilePsi) return null
+            parent = parent.parent
+        }
 
         fun search(root: OnjCanHaveVariableDeclaration): Symbol? {
             root.children.forEach { child ->
@@ -30,10 +40,18 @@ class OnjVariableSymbolReference(val referencingElement: PsiElement) : SingleTar
             return null
         }
 
-        referencingElement.containingFile.children.forEach { element ->
+        val topLevel = referencingElement
+            .containingFile
+            .children
+            .findInstance<OnjTopLevelPsi>()
+            ?: return null
+
+        topLevel.children.forEach { element ->
+            if (element == parent) return null // Dont search beyond the reference
             if (element !is OnjCanHaveVariableDeclaration) return@forEach
             search(element)?.let { return it }
         }
+
         return null
     }
 

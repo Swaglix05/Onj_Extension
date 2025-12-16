@@ -29,6 +29,7 @@ class OnjVariableUsePsi(
         val name = name
         if (name == "true" || name == "false") return OnjType.SomeBool
         if (name == "NaN" || name == "infinity") return OnjType.SomeFloat
+        if (name == "null") return OnjType.Null
         val target = reference.resolve()
         if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
         val parent = target.parent
@@ -43,6 +44,7 @@ class OnjVariableUsePsi(
             "false" -> return OnjType.SpecificBool(false)
             "NaN" -> return OnjType.SpecificFloat(Double.NaN)
             "infinity" -> return OnjType.SpecificFloat(Double.POSITIVE_INFINITY)
+            "null" -> return OnjType.Null
         }
         val target = reference.resolve()
         if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown

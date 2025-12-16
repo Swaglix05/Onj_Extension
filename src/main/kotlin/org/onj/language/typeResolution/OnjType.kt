@@ -35,6 +35,7 @@ sealed class OnjType(val printableName: String) {
     fun isString(): Boolean = this is SomeStr || this is SpecificStr
     fun isBool(): Boolean = this is SomeBool || this is SpecificBool
     fun isUnknown(): Boolean = this is Unknown
+    fun isNull(): Boolean = this is Null
 
     fun isNumber(): Boolean = isFloat() || isInt()
 
