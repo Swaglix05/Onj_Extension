@@ -6,6 +6,11 @@ object OnjSchemaTokenSets {
 
     val comments: TokenSet = TokenSet.create(OnjSchemaTypes.LINE_COMMENT, OnjSchemaTypes.BLOCK_COMMENT)
 
+    val strings: TokenSet = TokenSet.create(
+        OnjSchemaTypes.STRING_BEGIN, OnjSchemaTypes.STRING_PART, OnjSchemaTypes.STRING_ESCAPE,
+        OnjSchemaTypes.INVALID_STRING_ESCAPE, OnjSchemaTypes.STRING_END
+    )
+    
     val keywords: TokenSet = TokenSet.create(
         OnjSchemaTypes.IMPORT,
         OnjSchemaTypes.VAR,

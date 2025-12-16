@@ -36,6 +36,7 @@ COLON = ":"
 COMMA = ","
 STAR = "*"
 DOT = "."
+QUESTION_MARK = "?"
 DOLLAR = "$"
 SEMICOLON = ";"
 EQUALS = "="
@@ -45,6 +46,13 @@ R_BRACKET = "]"
 L_BRACKET = "["
 R_PAREN = ")"
 L_PAREN = "("
+
+DOUBLE_QUOTE = \"
+SINGLE_QUOTE = \'
+
+STRING_CONTENT = [^\"\'\\\r]*?
+ESCAPE_SEQUENCE = \\n|\\r|\\t|\\\"|\\\'|\\\\
+INVALID_ESCAPE = \\.
 
 %state STRING_DOUBLE_QUOTE
 %state STRING_SINGLE_QUOTE
@@ -69,6 +77,7 @@ L_PAREN = "("
 <YYINITIAL> {COMMA}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.COMMA; }
 <YYINITIAL> {STAR}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.STAR; }
 <YYINITIAL> {DOT}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.DOT; }
+<YYINITIAL> {QUESTION_MARK}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.QUESTION_MARK; }
 <YYINITIAL> {DOLLAR}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.DOLLAR; }
 <YYINITIAL> {SEMICOLON}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.SEMICOLON; }
 <YYINITIAL> {EQUALS}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.EQUALS; }
@@ -78,5 +87,24 @@ L_PAREN = "("
 <YYINITIAL> {L_BRACKET}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.L_BRACKET; }
 <YYINITIAL> {R_PAREN}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.R_PAREN; }
 <YYINITIAL> {L_PAREN}                                     { yybegin(YYINITIAL); return OnjSchemaTypes.L_PAREN; }
+
+<YYINITIAL> {DOUBLE_QUOTE}                                     { yybegin(STRING_DOUBLE_QUOTE); return OnjSchemaTypes.STRING_BEGIN; }
+<YYINITIAL> {SINGLE_QUOTE}                                     { yybegin(STRING_SINGLE_QUOTE); return OnjSchemaTypes.STRING_BEGIN; }
+
+<STRING_DOUBLE_QUOTE> {
+    {DOUBLE_QUOTE}   { yybegin(YYINITIAL); return OnjSchemaTypes.STRING_END; }
+    {ESCAPE_SEQUENCE} { yybegin(STRING_DOUBLE_QUOTE); return OnjSchemaTypes.STRING_ESCAPE; }
+    {INVALID_ESCAPE} { yybegin(STRING_DOUBLE_QUOTE); return OnjSchemaTypes.INVALID_STRING_ESCAPE; }
+    {SINGLE_QUOTE} { yybegin(STRING_DOUBLE_QUOTE); return OnjSchemaTypes.STRING_PART; }
+    {STRING_CONTENT} { yybegin(STRING_DOUBLE_QUOTE); return OnjSchemaTypes.STRING_PART; }
+}
+
+<STRING_SINGLE_QUOTE> {
+    {SINGLE_QUOTE}   { yybegin(YYINITIAL); return OnjSchemaTypes.STRING_END; }
+    {ESCAPE_SEQUENCE} { yybegin(STRING_SINGLE_QUOTE); return OnjSchemaTypes.STRING_ESCAPE; }
+    {INVALID_ESCAPE} { yybegin(STRING_SINGLE_QUOTE); return OnjSchemaTypes.INVALID_STRING_ESCAPE; }
+    {DOUBLE_QUOTE} { yybegin(STRING_SINGLE_QUOTE); return OnjSchemaTypes.STRING_PART; }
+    {STRING_CONTENT} { yybegin(STRING_SINGLE_QUOTE); return OnjSchemaTypes.STRING_PART; }
+}
 
 [^]                                                         { return TokenType.BAD_CHARACTER; }

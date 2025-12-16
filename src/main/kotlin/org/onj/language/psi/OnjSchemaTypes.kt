@@ -15,6 +15,7 @@ object OnjSchemaTypes {
     @JvmField val DIV: IElementType = OnjTokenType("DIV")
     @JvmField val DOLLAR: IElementType = OnjTokenType("DOLLAR")
     @JvmField val DOT: IElementType = OnjTokenType("DOT")
+    @JvmField val QUESTION_MARK: IElementType = OnjTokenType("QUESTION_MARK")
     @JvmField val EQUALS: IElementType = OnjTokenType("EQUALS")
     @JvmField val IDENTIFIER: IElementType = OnjTokenType("IDENTIFIER")
     @JvmField val IMPORT: IElementType = OnjTokenType("IMPORT")
@@ -29,6 +30,12 @@ object OnjSchemaTypes {
     @JvmField val STAR: IElementType = OnjTokenType("STAR")
     @JvmField val USE: IElementType = OnjTokenType("USE")
     @JvmField val VAR: IElementType = OnjTokenType("VAR")
+
+    @JvmField val STRING_BEGIN: IElementType = OnjTokenType("STRING_BEGIN")
+    @JvmField val STRING_END: IElementType = OnjTokenType("STRING_END")
+    @JvmField val STRING_ESCAPE: IElementType = OnjTokenType("STRING_ESCAPE")
+    @JvmField val INVALID_STRING_ESCAPE: IElementType = OnjTokenType("INVALID_STRING_ESCAPE")
+    @JvmField val STRING_PART: IElementType = OnjTokenType("STRING_PART")
 
     @JvmField val STRING: IElementType = OnjTokenType("STRING")
     @JvmField val FLOAT: IElementType = OnjTokenType("FLOAT")

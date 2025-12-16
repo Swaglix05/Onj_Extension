@@ -48,7 +48,6 @@ class OnjSchemaBasedAnnotator : Annotator {
     }
 
     private fun annotateTopLevel(element: OnjTopLevelPsi, holder: AnnotationHolder) {
-        println("annotatooooooor")
         val schemaPath = element.findSchemaComment() ?: return
         val root = Utils.findContainingContentRoot(element.containingFile) ?: return
         val path = root.resolve(Path(schemaPath))
@@ -58,7 +57,6 @@ class OnjSchemaBasedAnnotator : Annotator {
         }
         val psiFile = virtualFile.findPsiFile(element.project) as? OnjSchemaFile ?: return
         val (schema, namedObjects) = psiFile.getParsed() ?: return
-        println(schema)
         if (schema !is OnjSchemaObject) return
         matchObjectLike(element, schema, namedObjects, holder)
     }

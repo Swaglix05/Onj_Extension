@@ -26,13 +26,11 @@ class OnjSchemaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, 
             val parserData = OnjSchemaParserData(
                 importBasePath = root?.toCanonicalPath(),
                 importCache = { file ->
-                    println("in import cache")
                     val virtualFile = virtualFile.fileSystem.findFileByPath(file.path)
                     if (virtualFile == null || !virtualFile.exists() || virtualFile.fileType == OnjSchemaFileType) {
                         return@OnjSchemaParserData null
                     }
                     val psiFile = virtualFile.findPsiFile(project) as? OnjSchemaFile ?: return@OnjSchemaParserData null
-                    println("from import cache")
                     psiFile.getParsed()
                 }
             )
@@ -41,7 +39,6 @@ class OnjSchemaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, 
                 parsed = result
                 return result
             } catch (e: OnjParserException) {
-                println(e)
                 parsed = null
                 return null
             }
@@ -50,12 +47,15 @@ class OnjSchemaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, 
 
     fun getParsedSchema(): OnjSchema? = getParsed()?.first
 
-    override fun clearCaches() {
-        super.clearCaches()
+    fun clearSchema() {
         synchronized(LOCK) {
-            println("caches cleared!!!!!!!")
             parsed = null
         }
+    }
+
+    override fun clearCaches() {
+        super.clearCaches()
+        clearSchema()
     }
 
     override fun getFileType(): FileType {

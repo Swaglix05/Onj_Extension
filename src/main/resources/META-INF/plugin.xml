@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
 
-    <id>com.onj.language.Onj_Plugin</id>
+    <id>org.onj.language.Onj_Plugin</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
@@ -20,18 +20,27 @@
         Features:
         <ul>
             <li>syntax highlighting</li>
-            <li>basic syntax error checking</li>
+            <li>syntax error checking</li>
             <li>auto formatter</li>
-            <li>simple 'go to definition' logic</li>
+            <li>'go to definition' for variables and key references</li>
+            <li>'go to usages' for variables and key references</li>
+            <li>Basic type checking</li>
+            <li>Really simple Structure view</li>
+            <li>Autocomplete for variable and key references</li>
+            <li>Rename refactoring</li>
+            <li>Basic syntax highlighting for Onj Schemas</li>
+            <li>Comparing onj files with their schemas and highlighting errors</li>
         </ul>
         <br />
         Limitations:
         <ul>
-            <li>error checking beyond the syntax level (e.g. duplicate keys)</li>
-            <li>no refactoring operations like rename refactoring</li>
-            <li>no support for schemas</li>
-            <li>no quick fixes</li>
+            <li>No resolution between files (error checking may degrade when referencing imported data)</li>
+            <li>Discrepancies with the schema can't be detected beyond the outermost layer when referencing variables</li>
+            <li>Proper support for Onj Schemas beyond simple highlighting</li>
+            <li>Autocomplete based on Onj Schemas</li>
         </ul>
+        Note: The plugin can currently not detect changes to the schema of a file, if the change was made in a file
+        imported by the schema. The "Reload Onj Schema action" can be used to re-parse the changed schema.
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>
@@ -115,7 +124,12 @@
     <actions>
         <action id="org.onj.language.action.CreateOnjFileAction" class="org.onj.language.action.CreateOnjFileAction"
                 text="Onj File" description="Create new onj file">
-            <add-to-group group-id="NewGroup" anchor="first"/>
+            <add-to-group group-id="NewGroup" anchor="last"/>
+        </action>
+        <action id="org.onj.language.action.ReloadSchemaAction" class="org.onj.language.action.ReloadSchemaAction"
+                text="Reload Onj Schema" description="Reload Onj Schema">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"
+                          relative-to-action="JupyterShutdownNotebookAction"/>
         </action>
     </actions>
 </idea-plugin>
