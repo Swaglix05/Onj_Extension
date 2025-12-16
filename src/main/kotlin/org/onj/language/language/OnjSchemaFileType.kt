@@ -10,7 +10,7 @@ import javax.swing.Icon
 object OnjSchemaFileType : LanguageFileType(OnjSchemaLanguage) {
 
     override fun getName(): @NonNls String {
-        return "OnjSchema"
+        return "OnjSchema File"
     }
 
     override fun getDescription(): @NlsContexts.Label String {

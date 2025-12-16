@@ -54,7 +54,7 @@
                 language="Onj"
                 extensions="onj"/>
         <fileType
-                name="OnjSchema"
+                name="OnjSchema File"
                 implementationClass="org.onj.language.language.OnjSchemaFileType"
                 fieldName="INSTANCE"
                 language="OnjSchema"

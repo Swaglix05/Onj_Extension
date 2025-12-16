@@ -8,7 +8,7 @@ import javax.swing.Icon
 object OnjFileType : LanguageFileType(OnjLanguage) {
 
     override fun getName(): String {
-        return "Onj"
+        return "Onj File"
     }
 
     override fun getDescription(): String {
