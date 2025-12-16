@@ -45,7 +45,7 @@
                 language="Onj"
                 extensions="onj"/>
         <fileType
-                name="Onj schema file"
+                name="OnjSchema"
                 implementationClass="org.onj.language.language.OnjSchemaFileType"
                 fieldName="INSTANCE"
                 language="OnjSchema"
@@ -68,6 +68,9 @@
         <annotator
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjTypeBasedAnnotator"/>
+        <annotator
+                language="Onj"
+                implementationClass="org.onj.language.highlighting.OnjSchemaBasedAnnotator"/>
         <lang.findUsagesProvider
                 language="Onj"
                 implementationClass="org.onj.language.reference.OnjFindUsagesProvider"/>

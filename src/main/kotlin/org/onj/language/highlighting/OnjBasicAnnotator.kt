@@ -12,9 +12,6 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjImportStructurePsi
 import org.onj.language.psi.impl.OnjVariableDeclNamePsi
 import org.onj.language.quickFixes.DeleteUnusedQuickFix
-import org.onj.language.typeResolution.OnjType
-import org.onj.language.typeResolution.OnjTypeResolvablePsi
-import org.onj.language.utils.Utils.findInstance
 
 class OnjBasicAnnotator : Annotator {
 

@@ -14,7 +14,7 @@ object OnjSchemaFileType : LanguageFileType(OnjSchemaLanguage) {
     }
 
     override fun getDescription(): @NlsContexts.Label String {
-        return "Onj schema"
+        return "OnjSchema"
     }
 
     override fun getDefaultExtension(): @NlsSafe String {

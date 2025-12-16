@@ -88,6 +88,7 @@ tasks {
 
 sourceSets["main"].java.srcDirs("src/main/gen")
 sourceSets["main"].java.srcDirs("src/main/kotlin")
+sourceSets["main"].java.srcDirs("Onj/src/main/kotlin")
 
 intellijPlatformTesting {
     runIde {

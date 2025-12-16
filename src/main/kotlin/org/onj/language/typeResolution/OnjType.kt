@@ -17,8 +17,15 @@ sealed class OnjType(val printableName: String) {
     class SpecificInt(val value: Long) : OnjType("int")
     class SpecificFloat(val value: Double) : OnjType("float")
     class SpecificBool(val value: Boolean) : OnjType("boolean")
-    class SpecificObject(val keys: Map<String, OnjType>, val backingPsi: Map<String, OnjKeyValuePairPsi>) : OnjType("{...}")
-    class SpecificArray(val elements: List<OnjType>) : OnjType("[...]")
+    class SpecificObject(
+        val keys: Map<String, OnjType>,
+        val backingPsi: Map<String, OnjKeyValuePairPsi>,
+        val mayHaveMoreKeys: Boolean
+    ) : OnjType("{...}")
+    class SpecificArray(
+        val elements: List<OnjType>,
+        val mayHaveMoreElements: Boolean
+    ) : OnjType("[...]")
 
 
     fun isArray(): Boolean = this is SomeArray || this is SpecificArray

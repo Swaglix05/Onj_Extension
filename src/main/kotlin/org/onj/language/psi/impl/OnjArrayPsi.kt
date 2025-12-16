@@ -26,19 +26,23 @@ class OnjArrayPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjInStructureVie
 
     override fun resolveTypeFull(): OnjType {
         val elements = mutableListOf<OnjType>()
+        var mayHaveMoreElements = false
         children.forEach { child ->
             if (child is OnjTripleDotPsi) {
                 val expr = child.children.findInstance<OnjTypeResolvablePsi>()
                     ?: return@forEach
                 val includeType = expr.resolveTypeFull()
-                if (includeType !is OnjType.SpecificArray) return@forEach
+                if (includeType !is OnjType.SpecificArray) {
+                    mayHaveMoreElements = true
+                    return@forEach
+                }
                 includeType.elements.forEach { elements.add(it) }
             }
             if (child is OnjTypeResolvablePsi) {
                 elements.add(child.resolveTypeFull())
             }
         }
-        return OnjType.SpecificArray(elements)
+        return OnjType.SpecificArray(elements, mayHaveMoreElements)
     }
 
     override fun getPresentation(): ItemPresentation = object : ItemPresentation {

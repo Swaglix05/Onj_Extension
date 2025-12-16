@@ -26,6 +26,9 @@ class OnjVariableUsePsi(
     private val reference = OnjPsiReferenceBySymbolReferenceWrapper(this)
 
     override fun resolveTypeSimple(): OnjType {
+        val name = name
+        if (name == "true" || name == "false") return OnjType.SomeBool
+        if (name == "NaN" || name == "infinity") return OnjType.SomeFloat
         val target = reference.resolve()
         if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
         val parent = target.parent
@@ -35,6 +38,12 @@ class OnjVariableUsePsi(
     }
 
     override fun resolveTypeFull(): OnjType {
+        when (name) {
+            "true" -> return OnjType.SpecificBool(true)
+            "false" -> return OnjType.SpecificBool(false)
+            "NaN" -> return OnjType.SpecificFloat(Double.NaN)
+            "infinity" -> return OnjType.SpecificFloat(Double.POSITIVE_INFINITY)
+        }
         val target = reference.resolve()
         if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
         val parent = target.parent
@@ -48,6 +57,8 @@ class OnjVariableUsePsi(
         val newIdentifier = OnjElementFactory.createOnjIdentifier(project, newName)
         node.replaceChild(oldIdentifier, newIdentifier.node)
     }
+
+    override fun getName(): String? = text
 
     override fun getOwnReferences(): @Unmodifiable Collection<out PsiSymbolReference> {
         return Collections.singletonList(OnjVariableSymbolReference(this))

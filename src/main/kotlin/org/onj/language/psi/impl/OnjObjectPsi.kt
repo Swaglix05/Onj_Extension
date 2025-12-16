@@ -18,12 +18,16 @@ class OnjObjectPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjInStructureVi
     override fun resolveTypeFull(): OnjType {
         val elements = mutableMapOf<String, OnjType>()
         val backingPsis = mutableMapOf<String, OnjKeyValuePairPsi>()
+        var mayHaveMoreKeys = false
         children.forEach { child ->
             if (child is OnjTripleDotPsi) {
                 val expr = child.children.findInstance<OnjTypeResolvablePsi>()
                     ?: return@forEach
                 val includeType = expr.resolveTypeFull()
-                if (includeType !is OnjType.SpecificObject) return@forEach
+                if (includeType !is OnjType.SpecificObject) {
+                    mayHaveMoreKeys = true
+                    return@forEach
+                }
                 elements.putAll(includeType.keys)
                 backingPsis.putAll(includeType.backingPsi)
             }
@@ -33,7 +37,7 @@ class OnjObjectPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjInStructureVi
             elements[key] = value
             backingPsis[key] = child
         }
-        return OnjType.SpecificObject(elements, backingPsis)
+        return OnjType.SpecificObject(elements, backingPsis, mayHaveMoreKeys)
     }
 
     override fun getPresentation(): ItemPresentation = object : ItemPresentation {
