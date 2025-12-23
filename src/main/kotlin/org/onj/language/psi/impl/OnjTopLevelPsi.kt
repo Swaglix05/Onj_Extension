@@ -3,12 +3,15 @@ package org.onj.language.psi.impl
 import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.tree.util.children
+import com.intellij.psi.PsiElement
 import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjTypes
 
 class OnjTopLevelPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVariableDeclaration {
 
-    fun findSchemaComment(): String? {
+    fun findSchemaPath(): String? = findSchemaComment()?.first
+
+    fun findSchemaComment(): Pair<String, PsiElement>? {
 
         fun checkChild(node: ASTNode): String? {
             if (node.elementType != OnjTypes.LINE_COMMENT) return null
@@ -23,13 +26,13 @@ class OnjTopLevelPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVari
         node
             .children()
             .forEach { node ->
-                checkChild(node)?.let { return it }
+                checkChild(node)?.let { return it to node.psi }
             }
         parent
             .node
             .children()
             .forEach { node ->
-                checkChild(node)?.let { return it }
+                checkChild(node)?.let { return it to node.psi }
             }
         return null
     }

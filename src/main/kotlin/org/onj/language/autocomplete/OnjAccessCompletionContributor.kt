@@ -85,7 +85,14 @@ class OnjAccessLookupElement(
         insertableString = if (keyIsIdentifier) {
             key
         } else {
-            "\"$key\""
+            val newName = key
+                .replace("\n", "\\n")
+                .replace("\r", "\\r")
+                .replace("\t", "\\t")
+                .replace("\"", "\\\"")
+                .replace("'", "\\'")
+                .replace("\\", "\\\\")
+            "\"$newName\""
         }
     }
 

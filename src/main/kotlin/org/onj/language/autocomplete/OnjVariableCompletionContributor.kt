@@ -15,7 +15,9 @@ import com.intellij.util.ProcessingContext
 import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjImportStructurePsi
+import org.onj.language.psi.impl.OnjTopLevelPsi
 import org.onj.language.psi.impl.OnjVariableDeclNamePsi
+import org.onj.language.utils.Utils.findInstance
 
 
 class OnjVariableCompletionContributor : CompletionContributor() {
@@ -48,8 +50,12 @@ class OnjVariableCompletionProvider : CompletionProvider<CompletionParameters>()
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
-        parameters
+        val topLevel = parameters
             .originalFile
+            .children
+            .findInstance<OnjTopLevelPsi>()
+            ?: return
+        topLevel
             .children
             .filter { it is OnjCanHaveVariableDeclaration }
             .mapNotNull { it.node.findChildByType(OnjTypes.VARIABLE_DECL_NAME)?.psi }

@@ -23,7 +23,6 @@ import onj.schema.OnjSchemaString
 import onj.schema.TypeBasedOnjSchemaArray
 import org.onj.language.language.OnjSchemaFile
 import org.onj.language.language.OnjSchemaFileType
-import org.onj.language.psi.OnjTokenSets
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjArrayEntryPsi
 import org.onj.language.psi.impl.OnjKeyValuePairPsi
@@ -48,15 +47,27 @@ class OnjSchemaBasedAnnotator : Annotator {
     }
 
     private fun annotateTopLevel(element: OnjTopLevelPsi, holder: AnnotationHolder) {
-        val schemaPath = element.findSchemaComment() ?: return
+        val (schemaPath, schemaComment) = element.findSchemaComment() ?: return
         val root = Utils.findContainingContentRoot(element.containingFile) ?: return
         val path = root.resolve(Path(schemaPath))
         val virtualFile = element.containingFile.virtualFile.fileSystem.findFileByPath(path.pathString)
         if (virtualFile == null || !virtualFile.exists() || virtualFile.fileType != OnjSchemaFileType) {
+            holder
+                .newAnnotation(HighlightSeverity.WARNING, "Couldn't find schema file")
+                .range(schemaComment)
+                .highlightType(ProblemHighlightType.POSSIBLE_PROBLEM)
+                .create()
             return
         }
         val psiFile = virtualFile.findPsiFile(element.project) as? OnjSchemaFile ?: return
-        val (schema, namedObjects) = psiFile.getParsed() ?: return
+        val (schema, namedObjects) = psiFile.getParsed() ?: run {
+            holder
+                .newAnnotation(HighlightSeverity.WARNING, "Couldn't parse schema file")
+                .range(schemaComment)
+                .highlightType(ProblemHighlightType.POSSIBLE_PROBLEM)
+                .create()
+            return
+        }
         if (schema !is OnjSchemaObject) return
         matchObjectLike(element, schema, namedObjects, holder)
     }
@@ -162,6 +173,10 @@ class OnjSchemaBasedAnnotator : Annotator {
         holder: AnnotationHolder
     ) {
         if (schema is OnjSchemaAny) return
+        if (schema is OnjSchemaObject) {
+            matchObjectLike(obj, schema, namedObjects, holder)
+            return
+        }
         if (schema !is OnjSchemaNamedObjectGroup) {
             annotation("Expected ${typeNameForOnjSchema(schema)}", obj, holder)
             return

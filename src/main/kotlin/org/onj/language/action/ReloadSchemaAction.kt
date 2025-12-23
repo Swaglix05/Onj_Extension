@@ -34,7 +34,7 @@ class ReloadSchemaAction : AnAction() {
         }
         if (psiFile !is OnjFile) return
         val topLevel = psiFile.children.findInstance<OnjTopLevelPsi>() ?: return
-        val schemaPath = topLevel.findSchemaComment() ?: return
+        val schemaPath = topLevel.findSchemaPath() ?: return
         val root = Utils.findContainingContentRoot(topLevel.containingFile) ?: return
         val path = root.resolve(Path(schemaPath))
         val virtualFile = psiFile.containingFile.virtualFile.fileSystem.findFileByPath(path.pathString)

@@ -25,6 +25,7 @@ class OnjSchemaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, 
             val root = Utils.findContainingContentRoot(this)
             val parserData = OnjSchemaParserData(
                 importBasePath = root?.toCanonicalPath(),
+                analysisMode = true,
                 importCache = { file ->
                     val virtualFile = virtualFile.fileSystem.findFileByPath(file.path)
                     if (virtualFile == null || !virtualFile.exists() || virtualFile.fileType == OnjSchemaFileType) {

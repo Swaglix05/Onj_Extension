@@ -127,6 +127,7 @@ intellijPlatformTesting {
                 jvmArgumentProviders += CommandLineArgumentProvider {
                     listOf(
                         "-Drobot-server.port=8082",
+                        "-Didea.ProcessCanceledException=disabled",
                         "-Dide.mac.message.dialogs.as.sheets=false",
                         "-Djb.privacy.policy.text=<!--999.999-->",
                         "-Djb.consents.confirmation.enabled=false",
