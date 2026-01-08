@@ -4,6 +4,8 @@ import com.intellij.extapi.psi.ASTWrapperPsiElement
 import com.intellij.lang.ASTNode
 import com.intellij.lang.documentation.DocumentationMarkup
 import com.intellij.openapi.editor.richcopy.HtmlSyntaxInfoUtil
+import com.intellij.psi.PsiElement
+import com.intellij.psi.search.searches.ReferencesSearch
 import org.onj.language.language.OnjLanguage
 import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjPsiElementWithDocumentation
@@ -19,6 +21,15 @@ class OnjVarStructurePsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHave
 
     fun fullDeclarationType(): OnjType {
         return children.findInstance<OnjTypeResolvablePsi>()?.resolveTypeFull() ?: OnjType.Unknown
+    }
+
+    fun evaluateSeeThrough(): PsiElement? {
+        val name = children.findInstance<OnjVariableDeclNamePsi>() ?: return null
+        val query = ReferencesSearch.search(name, containingFile.useScope)
+        val count = query.count()
+        if (count != 1) return null
+        val first = query.first().element
+        return first
     }
 
     override fun renderDoc(): String? {

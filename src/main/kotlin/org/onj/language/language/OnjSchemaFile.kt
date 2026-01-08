@@ -40,6 +40,7 @@ class OnjSchemaFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, 
                 parsed = result
                 return result
             } catch (e: OnjParserException) {
+                e.printStackTrace()
                 parsed = null
                 return null
             }

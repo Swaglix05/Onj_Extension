@@ -29,6 +29,7 @@ import org.onj.language.psi.impl.OnjKeyValuePairPsi
 import org.onj.language.psi.impl.OnjNamedObjectPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
 import org.onj.language.psi.impl.OnjTripleDotPsi
+import org.onj.language.psi.impl.OnjVariableUsePsi
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
 import org.onj.language.utils.Utils
@@ -55,7 +56,7 @@ class OnjSchemaBasedAnnotator : Annotator {
             holder
                 .newAnnotation(HighlightSeverity.WARNING, "Couldn't find schema file")
                 .range(schemaComment)
-                .highlightType(ProblemHighlightType.POSSIBLE_PROBLEM)
+                .highlightType(ProblemHighlightType.WARNING)
                 .create()
             return
         }
@@ -64,7 +65,7 @@ class OnjSchemaBasedAnnotator : Annotator {
             holder
                 .newAnnotation(HighlightSeverity.WARNING, "Couldn't parse schema file")
                 .range(schemaComment)
-                .highlightType(ProblemHighlightType.POSSIBLE_PROBLEM)
+                .highlightType(ProblemHighlightType.WARNING)
                 .create()
             return
         }
@@ -136,6 +137,15 @@ class OnjSchemaBasedAnnotator : Annotator {
             OnjTypes.OBJECT -> matchObjectLike(value, schema, namedObjects, holder)
             OnjTypes.ARRAY -> matchArray(value, schema, namedObjects, holder)
             OnjTypes.NAMED_OBJECT -> matchNamedObject(value as OnjNamedObjectPsi, schema, namedObjects, holder)
+            OnjTypes.VARIABLE_USE -> {
+                value as OnjVariableUsePsi
+                val referenced = value.evaluateSeeThrough()
+                if (referenced == null) {
+                    matchSimple(value, schema, holder)
+                } else {
+                    matchValue(referenced, schema, namedObjects, holder)
+                }
+            }
             else if (value is OnjTypeResolvablePsi) -> matchSimple(value, schema, holder)
         }
     }
@@ -167,25 +177,26 @@ class OnjSchemaBasedAnnotator : Annotator {
     }
 
     private fun matchNamedObject(
-        obj: OnjNamedObjectPsi,
+        namedObj: OnjNamedObjectPsi,
         schema: OnjSchema,
         namedObjects: MutableMap<String, List<OnjSchemaNamedObject>>,
         holder: AnnotationHolder
     ) {
         if (schema is OnjSchemaAny) return
+        val obj = namedObj.children.findInstance<OnjTypeResolvablePsi>() ?: return
         if (schema is OnjSchemaObject) {
             matchObjectLike(obj, schema, namedObjects, holder)
             return
         }
         if (schema !is OnjSchemaNamedObjectGroup) {
-            annotation("Expected ${typeNameForOnjSchema(schema)}", obj, holder)
+            annotation("Expected ${typeNameForOnjSchema(schema)}", namedObj, holder)
             return
         }
         val objectOptions = namedObjects[schema.name] ?: return
-        val name = obj.name
+        val name = namedObj.name
         val namedObject = objectOptions.find { it.name == name }
         if (namedObject == null) {
-            annotation("name '$name' not in group '${schema.name}'", obj.getNameIdentifier() ?: return, holder)
+            annotation("name '$name' not in group '${schema.name}'", namedObj.getNameIdentifier() ?: return, holder)
             return
         }
         matchObjectLike(obj, namedObject.obj, namedObjects, holder)
@@ -210,9 +221,11 @@ class OnjSchemaBasedAnnotator : Annotator {
         arr: PsiElement,
         schema: LiteralOnjSchemaArray,
         namedObjects: MutableMap<String, List<OnjSchemaNamedObject>>,
-        holder: AnnotationHolder
-    ) {
-        var index = 0
+        holder: AnnotationHolder,
+        isSub: Boolean = false,
+        beginIndex: Int = 0
+    ): Int {
+        var index = beginIndex
         arr
             .children
             .forEach { entryPsi ->
@@ -227,28 +240,46 @@ class OnjSchemaBasedAnnotator : Annotator {
                     index++
                 } else if (entryPsi is OnjTripleDotPsi) {
                     val toIncludePsi = entryPsi.children.findInstance<OnjTypeResolvablePsi>() ?: return@forEach
+                    if (toIncludePsi is OnjVariableUsePsi) {
+                        val value = toIncludePsi.evaluateSeeThrough()
+                        if (value != null) {
+                            val newIndex = matchLiteralArray(value, schema, namedObjects, holder, true, index)
+                            if (newIndex == -1) return -1
+                            index = newIndex
+                            return@forEach
+                        }
+                    }
                     val includeType = toIncludePsi.resolveTypeFull()
-                    if (includeType !is OnjType.SpecificArray) return
-                    if (includeType.mayHaveMoreElements) return
+                    if (includeType !is OnjType.SpecificArray) return -1
+                    if (includeType.mayHaveMoreElements) return -1
                     includeType.elements.forEach { enty ->
                         val valueSchema = schema.schemas.getOrNull(index)
                         if (valueSchema == null) {
                             annotation("Too many keys are included here", entryPsi, holder)
                             return@forEach
                         }
+                        index++
                         val result = matchTypeToSchema(enty, valueSchema) ?: return@forEach
                         annotation("Element here has mismatched type: $result", entryPsi, holder)
                     }
                 }
             }
+        val targetSize = schema.schemas.size
+        if (!isSub && index < targetSize - 1) {
+            arr.node.findChildByType(OnjTypes.R_BRACKET)?.psi?.let { toHighlight ->
+                annotation("element missing", toHighlight, holder)
+            }
+        }
+        return index
     }
 
     private fun matchTypeBasedArray(
         arr: PsiElement,
         schema: TypeBasedOnjSchemaArray,
         namedObjects: MutableMap<String, List<OnjSchemaNamedObject>>,
-        holder: AnnotationHolder
-    ) {
+        holder: AnnotationHolder,
+        isSub: Boolean = false,
+    ): Int {
         var size = 0
         var sizeUnknown = false
         arr
@@ -264,8 +295,16 @@ class OnjSchemaBasedAnnotator : Annotator {
             .filterIsInstance<OnjTripleDotPsi>()
             .forEach { tripleDotPsi ->
                 val toInclude = tripleDotPsi.children.findInstance<OnjTypeResolvablePsi>() ?: return@forEach
+                if (toInclude is OnjVariableUsePsi) {
+                    val resolved = toInclude.evaluateSeeThrough()
+                    if (resolved != null) {
+                        val subSize = matchTypeBasedArray(resolved, schema, namedObjects, holder, true)
+                        size += subSize
+                        return@forEach
+                    }
+                }
                 val includeType = toInclude.resolveTypeFull()
-                if (includeType !is OnjType.SpecificArray) return
+                if (includeType !is OnjType.SpecificArray) return -1
                 if (includeType.mayHaveMoreElements) sizeUnknown = true
                 includeType.elements.forEach { type ->
                     val result = matchTypeToSchema(type, schema.type) ?: return@forEach
@@ -273,9 +312,11 @@ class OnjSchemaBasedAnnotator : Annotator {
                 }
                 size += includeType.elements.size
             }
-        if (sizeUnknown) return
-        if (schema.size == null || size == schema.size) return
+        if (sizeUnknown) return -1
+        if (isSub) return size
+        if (schema.size == null || size == schema.size) return size
         annotation("array length mismatch: expected ${schema.size}, actual $size", arr, holder)
+        return size
     }
 
     private fun typeNameForOnjSchema(schema: OnjSchema): String = when (schema) {

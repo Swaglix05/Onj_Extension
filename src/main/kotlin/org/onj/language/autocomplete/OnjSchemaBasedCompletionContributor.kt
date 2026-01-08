@@ -13,6 +13,7 @@ import com.intellij.patterns.PlatformPatterns
 import com.intellij.psi.PsiElement
 import com.intellij.util.ProcessingContext
 import onj.schema.LiteralOnjSchemaArray
+import onj.schema.OnjSchemaNamedObjectGroup
 import onj.schema.OnjSchemaObject
 import onj.schema.TypeBasedOnjSchemaArray
 import org.jetbrains.annotations.Unmodifiable
@@ -22,8 +23,10 @@ import org.onj.language.language.OnjSchemaFileType
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjArrayEntryPsi
 import org.onj.language.psi.impl.OnjKeyValuePairPsi
+import org.onj.language.psi.impl.OnjNamedObjectPsi
 import org.onj.language.psi.impl.OnjObjectPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
+import org.onj.language.psi.impl.OnjVarStructurePsi
 import org.onj.language.rename.OnjElementFactory
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.utils.Utils
@@ -87,17 +90,24 @@ class OnjSchemaBasedCompletionProvider(
             return
         }
         val psiFile = virtualFile.findPsiFile(parameters.originalFile.project) as? OnjSchemaFile ?: return
-        val schema = psiFile.getParsedSchema() ?: return
+        val (schema, namedObjects) = psiFile.getParsed() ?: return
 
         val position = parameters.originalPosition ?: return
         val path = Stack<PsiElement>()
         var curElement: PsiElement? = position
         var firstObject: OnjObjectPsi? = null
         while (curElement != null) {
-            if (curElement is OnjObjectPsi) firstObject = curElement
+            if (curElement is OnjObjectPsi && firstObject == null) firstObject = curElement
             if (curElement is OnjTopLevelPsi) break
             if (curElement is OnjKeyValuePairPsi || curElement is OnjArrayEntryPsi) {
                 path.push(curElement)
+            }
+            if (curElement is OnjVarStructurePsi) {
+                val referenced = curElement.evaluateSeeThrough()
+                if (referenced != null) {
+                    curElement = referenced
+                    continue
+                }
             }
             curElement = curElement.parent
         }
@@ -111,9 +121,18 @@ class OnjSchemaBasedCompletionProvider(
             }
             when (val element = path.pop()) {
                 is OnjKeyValuePairPsi -> {
-                    if (schema !is OnjSchemaObject) return
+                    if (curSchema !is OnjSchemaObject) return
                     val key = element.getKey().getKeyText(false)
-                    curSchema = schema.keys[key] ?: schema.optionalKeys[key] ?: return
+                    curSchema = curSchema.keys[key] ?: curSchema.optionalKeys[key] ?: return
+                    if (curSchema is OnjSchemaNamedObjectGroup) {
+                        val namedObject = element.getValue()
+                        if (namedObject !is OnjNamedObjectPsi) continue
+                        val name = namedObject.name
+                        val namedObjectSchema = namedObjects[curSchema.name]
+                            ?.find { it.name == name }
+                            ?: return
+                        curSchema = namedObjectSchema.obj
+                    }
                 }
                 is OnjArrayEntryPsi -> {
                     when (curSchema) {

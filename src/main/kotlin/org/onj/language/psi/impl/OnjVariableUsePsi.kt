@@ -1,21 +1,30 @@
 package org.onj.language.psi.impl
 
 import com.intellij.extapi.psi.ASTWrapperPsiElement
+import com.intellij.find.findUsages.FindUsagesHandler
+import com.intellij.find.findUsages.FindUsagesManager
+import com.intellij.find.findUsages.FindUsagesOptions
 import com.intellij.lang.ASTNode
+import com.intellij.lang.findUsages.FindUsagesProvider
 import com.intellij.model.psi.PsiSymbolReference
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.NavigatablePsiElement
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiReference
+import com.intellij.psi.search.SearchScope
+import com.intellij.psi.search.searches.ReferencesSearch
 import org.jetbrains.annotations.Unmodifiable
 import org.onj.language.psi.OnjRenamableReference
 import org.onj.language.psi.OnjTypes
+import org.onj.language.reference.OnjFindUsagesProvider
 import org.onj.language.reference.OnjPsiReferenceBySymbolReferenceWrapper
 import org.onj.language.rename.OnjElementFactory
+import org.onj.language.symbols.OnjVariableSymbol
 import org.onj.language.symbols.OnjVariableSymbolReference
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
+import org.onj.language.utils.Utils.findInstance
 import java.util.Collections
 
 class OnjVariableUsePsi(
@@ -52,6 +61,21 @@ class OnjVariableUsePsi(
         if (parent is OnjImportStructurePsi) return OnjType.SomeObject
         if (parent !is OnjVarStructurePsi) return OnjType.Unknown
         return parent.fullDeclarationType()
+    }
+
+    fun evaluateSeeThrough(): OnjTypeResolvablePsi? {
+        val symbol = OnjVariableSymbolReference(this)
+            .resolveReference()
+            .firstOrNull()
+            as? OnjVariableSymbol
+            ?: return null
+        val declaration = symbol.psiElement.parent
+        if (declaration !is OnjVarStructurePsi) return null
+        val query = ReferencesSearch.search(symbol.psiElement, containingFile.useScope)
+        val amount = query.count()
+        if (amount != 1) return null
+        val declaredElement = declaration.children.findInstance<OnjTypeResolvablePsi>() ?: return null
+        return declaredElement
     }
 
     override fun rename(newName: String) {

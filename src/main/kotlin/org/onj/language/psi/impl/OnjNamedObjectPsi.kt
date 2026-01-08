@@ -12,13 +12,15 @@ class OnjNamedObjectPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjTypeReso
 
     override fun getName(): String? {
         return node
-            .findChildByType(OnjTypes.IDENTIFIER)
+            .findChildByType(OnjTypes.NAMED_OBJECT_NAME)
+            ?.findChildByType(OnjTypes.IDENTIFIER)
             ?.text
     }
 
     fun getNameIdentifier(): PsiElement? {
         return node
-            .findChildByType(OnjTypes.IDENTIFIER)
+            .findChildByType(OnjTypes.NAMED_OBJECT_NAME)
+            ?.findChildByType(OnjTypes.IDENTIFIER)
             ?.psi
     }
 
