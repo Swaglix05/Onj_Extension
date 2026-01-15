@@ -19,13 +19,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-                name="Onj File"
+                name="Onj"
                 implementationClass="org.onj.language.language.OnjFileType"
                 fieldName="INSTANCE"
                 language="Onj"
                 extensions="onj"/>
         <fileType
-                name="OnjSchema File"
+                name="OnjSchema"
                 implementationClass="org.onj.language.language.OnjSchemaFileType"
                 fieldName="INSTANCE"
                 language="OnjSchema"

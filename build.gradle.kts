@@ -67,6 +67,7 @@ intellijPlatform {
                 <li>Basic type checking</li>
                 <li>Really simple Structure view</li>
                 <li>Autocomplete for variable and key references</li>
+                <li>Autocomplete based on the schema for the file</li>
                 <li>Rename refactoring</li>
                 <li>Basic syntax highlighting for Onj Schemas</li>
                 <li>Comparing onj files with their schemas and highlighting errors</li>
@@ -74,11 +75,9 @@ intellijPlatform {
             <br />
             Limitations:
             <ul>
-                <li>No resolution between files (error checking may degrade when referencing imported data)</li>
-                <li>Discrepancies with the schema can't be detected beyond the outermost layer when referencing variables</li>
+                <li>Error detection/Autocomplete features may degrade when referencing data defined in a different file or when expressions get too complicated</li>
                 <li>Proper support for Onj Schemas beyond simple highlighting</li>
-                <li>Autocomplete based on Onj Schemas</li>
-                <li>No namespace support</li>
+                <li>No namespace support, cannot resolve variables/functions defined in namespaces</li>
             </ul>
             Note: The plugin can currently not detect changes to the schema of a file, if the change was made in a file
             imported by the schema. The "Reload Onj Schema action" can be used to re-parse the changed schema.
