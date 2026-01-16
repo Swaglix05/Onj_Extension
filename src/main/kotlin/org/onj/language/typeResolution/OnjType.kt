@@ -51,4 +51,17 @@ sealed class OnjType(val printableName: String) {
     fun isSpecific(): Boolean = !isSome() || this is Null
 
     override fun toString(): String = printableName
+
+    companion object {
+
+        fun fromString(string: String): OnjType = when (string) {
+            "string" -> SomeStr
+            "int" -> SomeInt
+            "float" -> SomeFloat
+            "boolean" -> SomeBool
+            "object" -> SomeObject
+            "array" -> SomeArray
+            else -> Unknown
+        }
+    }
 }

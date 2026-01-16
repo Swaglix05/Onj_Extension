@@ -16,7 +16,9 @@ import org.onj.language.psi.OnjCanHaveVariableDeclaration
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjImportStructurePsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
+import org.onj.language.psi.impl.OnjVarStructurePsi
 import org.onj.language.psi.impl.OnjVariableDeclNamePsi
+import org.onj.language.typeResolution.OnjType
 import org.onj.language.utils.Utils.findInstance
 
 
@@ -83,12 +85,15 @@ class OnjVariableLookupElement(
         if (parent.elementType == OnjTypes.IMPORT_STRUCTURE) {
             val importPath = (parent as OnjImportStructurePsi).getImportedPath()
             presentation.tailText = if (importPath == null) {
-                "   from import"
+                " from import"
             } else {
-                "   import $importPath"
+                " import $importPath"
             }
+            presentation.typeText = OnjType.SomeObject.printableName
         } else if (parent.elementType == OnjTypes.VAR_STRUCTURE) {
-            presentation.tailText = "   from variable"
+            parent as OnjVarStructurePsi
+            presentation.tailText = " from variable"
+            presentation.typeText = parent.simpleDeclarationType().printableName
         }
     }
 

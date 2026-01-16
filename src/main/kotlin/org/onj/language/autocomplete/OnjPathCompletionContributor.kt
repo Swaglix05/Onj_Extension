@@ -29,7 +29,7 @@ class OnjPathCompletionContributor : CompletionContributor() {
                 PlatformPatterns.psiElement(OnjTypes.STRING_ESCAPE).withSuperParent(2, PlatformPatterns.psiElement(OnjTypes.IMPORT_PATH)),
                 PlatformPatterns.psiElement(OnjTypes.INVALID_STRING_ESCAPE).withSuperParent(2, PlatformPatterns.psiElement(OnjTypes.IMPORT_PATH)),
             ),
-            OnjVariableCompletionProvider()
+            OnjEnvBasedCompletionProvider()
         )
     }
 

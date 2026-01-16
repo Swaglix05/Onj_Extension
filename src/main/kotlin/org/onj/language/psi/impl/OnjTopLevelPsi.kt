@@ -11,6 +11,12 @@ class OnjTopLevelPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVari
 
     fun findSchemaPath(): String? = findSchemaComment()?.first
 
+    fun findUsedNamespaces(): List<String> = children
+        .filterIsInstance<OnjUseStructurePsi>()
+        .mapNotNull {
+            it.node.findChildByType(OnjTypes.IDENTIFIER)?.text
+        }
+
     fun findSchemaComment(): Pair<String, PsiElement>? {
 
         fun checkChild(node: ASTNode): String? {

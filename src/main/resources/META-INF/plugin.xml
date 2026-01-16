@@ -30,12 +30,21 @@
                 fieldName="INSTANCE"
                 language="OnjSchema"
                 extensions="onjschema"/>
+        <fileType
+                name="OnjEnv"
+                implementationClass="org.onj.language.env.OnjEnvFileType"
+                fieldName="INSTANCE"
+                language="OnjEnv"
+                extensions="onjenv"/>
         <lang.parserDefinition
                 language="Onj"
                 implementationClass="org.onj.language.parser.OnjParserDefinition"/>
         <lang.parserDefinition
                 language="OnjSchema"
                 implementationClass="org.onj.language.parser.OnjSchemaParserDefinition"/>
+        <lang.parserDefinition
+                language="OnjEnv"
+                implementationClass="org.onj.language.env.OnjEnvParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjSyntaxHighlighterFactory"/>
@@ -51,6 +60,9 @@
         <annotator
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjSchemaBasedAnnotator"/>
+        <annotator
+                language="Onj"
+                implementationClass="org.onj.language.highlighting.OnjEnvBasedAnnotator"/>
         <lang.findUsagesProvider
                 language="Onj"
                 implementationClass="org.onj.language.reference.OnjFindUsagesProvider"/>
@@ -91,6 +103,9 @@
         <completion.contributor
                 language="Onj"
                 implementationClass="org.onj.language.autocomplete.OnjSchemaBasedCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjEnvBasedCompletionContributor"/>
         <lang.documentationProvider
                 language="Onj"
                 implementationClass="org.onj.language.documentation.OnjDocumentationProvider"/>
