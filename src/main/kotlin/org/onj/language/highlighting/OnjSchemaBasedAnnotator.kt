@@ -14,6 +14,7 @@ import onj.schema.OnjSchema
 import onj.schema.OnjSchemaAny
 import onj.schema.OnjSchemaArray
 import onj.schema.OnjSchemaBoolean
+import onj.schema.OnjSchemaCustomDataType
 import onj.schema.OnjSchemaFloat
 import onj.schema.OnjSchemaInt
 import onj.schema.OnjSchemaNamedObject
@@ -115,7 +116,7 @@ class OnjSchemaBasedAnnotator : Annotator {
                         annotation("Unknown key '$key' included here", tripleDotPsi, holder)
                     }
                     if (valueSchema == null) return@forEach
-                    val matchResult = matchTypeToSchema(type, valueSchema) ?: return@forEach
+                    val matchResult = type.matchTypeToSchema(valueSchema) ?: return@forEach
                     annotation("Type mismatch in included key '$key': $matchResult", tripleDotPsi, holder)
                 }
             }
@@ -150,29 +151,9 @@ class OnjSchemaBasedAnnotator : Annotator {
         }
     }
 
-    private fun matchTypeToSchema(type: OnjType, schema: OnjSchema): String? {
-        if (type.isUnknown()) return null
-        if (type.isNull()) {
-            if (schema.nullable) return null
-            return "null not allowed here"
-        }
-        return when (schema) {
-            is OnjSchemaAny -> null
-            is OnjSchemaFloat -> if (type.isFloat()) null else "Expected float, found: ${type.printableName}"
-            is OnjSchemaInt -> if (type.isInt()) null else "Expected int, found: ${type.printableName}"
-            is OnjSchemaString -> if (type.isString()) null else "Expected string, found: ${type.printableName}"
-            is OnjSchemaBoolean -> if (type.isBool()) null else "Expected boolean, found: ${type.printableName}"
-            // No deep matching performed here
-            is OnjSchemaNamedObjectGroup -> if (type.isObject()) null else "Expected object, found: ${type.printableName}"
-            is OnjSchemaObject -> if (type.isObject()) null else "Expected object, found: ${type.printableName}"
-            is OnjSchemaArray -> if (type.isObject()) null else "Expected array, found: ${type.printableName}"
-            else -> null
-        }
-    }
-
     private fun matchSimple(value: OnjTypeResolvablePsi, schema: OnjSchema, holder: AnnotationHolder) {
         val type = value.resolveTypeSimple()
-        val result = matchTypeToSchema(type, schema) ?: return
+        val result = type.matchTypeToSchema(schema) ?: return
         annotation(result, value, holder)
     }
 
@@ -259,7 +240,7 @@ class OnjSchemaBasedAnnotator : Annotator {
                             return@forEach
                         }
                         index++
-                        val result = matchTypeToSchema(enty, valueSchema) ?: return@forEach
+                        val result = enty.matchTypeToSchema(valueSchema) ?: return@forEach
                         annotation("Element here has mismatched type: $result", entryPsi, holder)
                     }
                 }
@@ -307,7 +288,7 @@ class OnjSchemaBasedAnnotator : Annotator {
                 if (includeType !is OnjType.SpecificArray) return -1
                 if (includeType.mayHaveMoreElements) sizeUnknown = true
                 includeType.elements.forEach { type ->
-                    val result = matchTypeToSchema(type, schema.type) ?: return@forEach
+                    val result = type.matchTypeToSchema(schema.type) ?: return@forEach
                     annotation("value included here has mismatched type: $result", tripleDotPsi, holder)
                 }
                 size += includeType.elements.size

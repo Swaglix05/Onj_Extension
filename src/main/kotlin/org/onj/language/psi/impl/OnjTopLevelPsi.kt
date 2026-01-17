@@ -15,7 +15,7 @@ class OnjTopLevelPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVari
         .filterIsInstance<OnjUseStructurePsi>()
         .mapNotNull {
             it.node.findChildByType(OnjTypes.IDENTIFIER)?.text
-        }
+        } + listOf("global")
 
     fun findSchemaComment(): Pair<String, PsiElement>? {
 

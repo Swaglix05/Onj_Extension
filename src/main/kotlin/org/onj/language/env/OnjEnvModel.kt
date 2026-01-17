@@ -1,5 +1,6 @@
 package org.onj.language.env
 
+import onj.parser.OnjSchemaParserData
 import onj.schema.OnjSchemaArray
 import onj.schema.OnjSchemaObject
 import onj.value.OnjArray
@@ -8,7 +9,7 @@ import org.onj.language.typeResolution.OnjType
 
 data class OnjFunctionModel(
     val name: String,
-    val type: OnjFunctionType,
+    val isInfix: Boolean,
     val paramsSchema: OnjSchemaArray,
     val paramsString: String,
     val returnType: OnjType
@@ -17,14 +18,13 @@ data class OnjFunctionModel(
 
         fun fromOnj(obj: OnjObject) = OnjFunctionModel(
             obj.get<String>("name"),
-            when (val type = obj.get<String>("type")) {
-                "infix" -> OnjFunctionType.INFIX
-                "normal" -> OnjFunctionType.NORMAL
-                "operator" -> OnjFunctionType.OPERATOR
-                "conversion" -> OnjFunctionType.CONVERSION
-                else -> throw RuntimeException("unkown onj function type: $type")
-            },
-            (onj.parser.OnjSchemaParser.parse(obj.get<String>("paramSchema")) as OnjSchemaObject).keys["params"]!! as OnjSchemaArray,
+            obj.get<Boolean>("isInfix"),
+            (
+                onj.parser.OnjSchemaParser.parse(
+                    obj.get<String>("paramSchema"),
+                    OnjSchemaParserData(analysisMode = true)
+                ) as OnjSchemaObject
+            ).keys["params"]!! as OnjSchemaArray,
             obj.get<String>("paramSchema"),
             OnjType.fromString(obj.get<String>("returnType"))
         )

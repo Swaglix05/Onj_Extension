@@ -4,22 +4,17 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.lang.annotation.AnnotationHolder
 import com.intellij.lang.annotation.Annotator
 import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.lang.tree.util.children
 import com.intellij.psi.PsiElement
+import onj.customization.OnjFunction
 import onj.schema.LiteralOnjSchemaArray
-import onj.schema.OnjSchema
-import onj.schema.OnjSchemaAny
-import onj.schema.OnjSchemaArray
-import onj.schema.OnjSchemaBoolean
-import onj.schema.OnjSchemaFloat
-import onj.schema.OnjSchemaInt
-import onj.schema.OnjSchemaNamedObjectGroup
-import onj.schema.OnjSchemaObject
-import onj.schema.OnjSchemaString
 import onj.schema.TypeBasedOnjSchemaArray
 import org.onj.language.env.OnjEnvModel
 import org.onj.language.env.OnjFunctionModel
+import org.onj.language.psi.OnjFunctionLikePsiElement
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjFunctionCallPsi
+import org.onj.language.psi.impl.OnjInfixFunctionCallPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
@@ -29,58 +24,86 @@ import org.onj.language.utils.Utils.findInstance
 class OnjEnvBasedAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is OnjFunctionCallPsi) return
+        if (element !is OnjFunctionLikePsiElement) return
         val topLevel = element.containingFile.children.findInstance<OnjTopLevelPsi>()
             ?: return
-        val namespaces = topLevel.findUsedNamespaces() + listOf("global")
+        val namespaces = topLevel.findUsedNamespaces()
         val envFile = Utils.findEnvFile(element.project) ?: return
         val envModel = envFile.getEnvironmentModel() ?: return
-        annotateFunctionCall(element, namespaces, envModel, holder)
+        val resolved = annotateFunctionCall(element, namespaces, envModel, holder)
+        resolved?.let { checkFunctionCallMethod(element, it, holder) }
+    }
+
+    private fun checkFunctionCallMethod(
+        element: OnjFunctionLikePsiElement,
+        functionModel: OnjFunctionModel,
+        holder: AnnotationHolder
+    ) {
+        if (element is OnjInfixFunctionCallPsi && !functionModel.isInfix) {
+            val nameIdentifier = element.findNameIdentifier() ?: return
+            val printableName = element.printableName()
+            holder
+                .newAnnotation(HighlightSeverity.ERROR, "Function '$printableName' is not callable as infix")
+                .range(nameIdentifier)
+                .highlightType(ProblemHighlightType.GENERIC_ERROR)
+                .create()
+        }
+        if (element is OnjFunctionCallPsi && functionModel.isInfix) {
+            val nameIdentifier = element.findNameIdentifier() ?: return
+            val printableName = element.printableName()
+            holder
+                .newAnnotation(HighlightSeverity.WEAK_WARNING, "Function '$printableName' could be called as infix")
+                .range(nameIdentifier)
+                .highlightType(ProblemHighlightType.WEAK_WARNING)
+                .create()
+        }
     }
 
     fun annotateFunctionCall(
-        element: OnjFunctionCallPsi,
+        element: OnjFunctionLikePsiElement,
         usedNamespaces: List<String>,
         envModel: OnjEnvModel,
         holder: AnnotationHolder
-    ) {
-        val name = element.functionName()
-        val nameIdentifier = element.node.findChildByType(OnjTypes.FUNCTION_NAME)?.psi ?: return
-        val rightParen = element.node.findChildByType(OnjTypes.R_PAREN)?.psi ?: return
+    ): OnjFunctionModel? {
+        val resolveName = element.resolvableName()
+        val printName = element.printableName()
+        val nameIdentifier = element.findNameIdentifier() ?: return null
+        val rightParen = element.node.children().last().psi ?: return null
         val candidates = mutableListOf<OnjFunctionModel>()
         usedNamespaces.forEach { namespaceName ->
             val namespace = envModel.namespaces[namespaceName] ?: return@forEach
-            namespace.functions.filter { it.name == name }.forEach { candidates.add(it) }
+            namespace.functions.filter { it.name == resolveName }.forEach { candidates.add(it) }
         }
         if (candidates.isEmpty()) {
             holder
-                .newAnnotation(HighlightSeverity.WARNING, "Unknown function '$name'")
+                .newAnnotation(HighlightSeverity.ERROR, "Unknown function '$printName'")
                 .range(nameIdentifier)
-                .highlightType(ProblemHighlightType.WARNING)
+                .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
                 .create()
-            return
+            return null
         }
         val params = element.findParameters()
         val paramTypes = params.map { it.resolveTypeSimple() }
         if (candidates.size == 1) {
-            annotateSingleCandidate(candidates.first(), paramTypes, holder, params, rightParen)
-            return
+            val functionModel = candidates.first()
+            annotateSingleCandidate(functionModel, paramTypes, holder, params, rightParen)
+            return functionModel
         }
         val result = findFittingFunction(candidates, paramTypes)
-        if (result != null) return
-        val message = StringBuilder("No overload of $name callable<br />Possibilities:<br />")
+        if (result != null) return result
+        val message = StringBuilder("No overload of $printName callable<br />Possibilities:<br />")
         candidates.forEach { candidate ->
             val index = candidate.paramsString.indexOf(':')
             val paramsString = candidate.paramsString.substring(index + 1, candidate.paramsString.length).trim()
             message.append("$paramsString<br />")
         }
         holder
-            .newAnnotation(HighlightSeverity.WARNING, "")
+            .newAnnotation(HighlightSeverity.ERROR, "")
             .tooltip(message.toString())
             .range(nameIdentifier)
-            .highlightType(ProblemHighlightType.WARNING)
+            .highlightType(ProblemHighlightType.GENERIC_ERROR)
             .create()
-
+        return null
     }
 
     private fun annotateSingleCandidate(
@@ -102,7 +125,7 @@ class OnjEnvBasedAnnotator : Annotator {
                         .create()
                     return@forEachIndexed
                 }
-                val matchResult = matchTypeToSchema(type, paramSchema) ?: return@forEachIndexed
+                val matchResult = type.matchTypeToSchema(paramSchema) ?: return@forEachIndexed
                 holder
                     .newAnnotation(HighlightSeverity.ERROR, matchResult)
                     .range(params[index])
@@ -127,7 +150,7 @@ class OnjEnvBasedAnnotator : Annotator {
                     .create()
             }
             paramTypes.forEachIndexed { index, type ->
-                val result = matchTypeToSchema(type, schema.type)
+                val result = type.matchTypeToSchema(schema.type)
                     ?: return@forEachIndexed
                 holder
                     .newAnnotation(HighlightSeverity.ERROR, result)
@@ -147,38 +170,18 @@ class OnjEnvBasedAnnotator : Annotator {
             if (schema is LiteralOnjSchemaArray) {
                 if (schema.schemas.size != paramTypes.size) return@candidateSearch
                 schema.schemas.forEachIndexed { index, schema ->
-                    if (matchTypeToSchema(paramTypes[index], schema) != null) return@candidateSearch
+                    if (paramTypes[index].matchTypeToSchema(schema) != null) return@candidateSearch
                 }
                 return functionModel
             }
             if (schema is TypeBasedOnjSchemaArray) {
                 if (schema.size != null && schema.size != paramTypes.size) return@candidateSearch
                 paramTypes.forEach {
-                    if (matchTypeToSchema(it, schema.type) != null) return@candidateSearch
+                    if (it.matchTypeToSchema(schema.type) != null) return@candidateSearch
                 }
                 return functionModel
             }
         }
         return null
-    }
-
-    private fun matchTypeToSchema(type: OnjType, schema: OnjSchema): String? {
-        if (type.isUnknown()) return null
-        if (type.isNull()) {
-            if (schema.nullable) return null
-            return "null not allowed here"
-        }
-        return when (schema) {
-            is OnjSchemaAny -> null
-            is OnjSchemaFloat -> if (type.isFloat()) null else "Expected float, found: ${type.printableName}"
-            is OnjSchemaInt -> if (type.isInt()) null else "Expected int, found: ${type.printableName}"
-            is OnjSchemaString -> if (type.isString()) null else "Expected string, found: ${type.printableName}"
-            is OnjSchemaBoolean -> if (type.isBool()) null else "Expected boolean, found: ${type.printableName}"
-            // No deep matching performed here
-            is OnjSchemaNamedObjectGroup -> if (type.isObject()) null else "Expected object, found: ${type.printableName}"
-            is OnjSchemaObject -> if (type.isObject()) null else "Expected object, found: ${type.printableName}"
-            is OnjSchemaArray -> if (type.isObject()) null else "Expected array, found: ${type.printableName}"
-            else -> null
-        }
     }
 }

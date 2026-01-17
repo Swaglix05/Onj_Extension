@@ -53,7 +53,7 @@ class OnjEnvFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Onj
             
             var function = {
                 name: string,
-                type: string,
+                isInfix: boolean,
                 paramSchema: string,
                 returnType: string,
             };
