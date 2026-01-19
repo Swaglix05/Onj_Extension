@@ -8,7 +8,6 @@ import org.onj.language.psi.impl.OnjArrayEntryPsi
 import org.onj.language.psi.impl.OnjArrayPsi
 import org.onj.language.psi.impl.OnjAsContextDependentKeywordPsi
 import org.onj.language.psi.impl.OnjBinaryOperationPsi
-import org.onj.language.psi.impl.OnjConversionNamePsi
 import org.onj.language.psi.impl.OnjConversionPsi
 import org.onj.language.psi.impl.OnjFilePsi
 import org.onj.language.psi.impl.OnjFloatPsi
@@ -64,7 +63,6 @@ object OnjTypes {
     @JvmField val VARIABLE_DECL_NAME: IElementType = OnjElementType("VARIABLE_DECL_NAME")
     @JvmField val NAMED_OBJECT_NAME: IElementType = OnjElementType("NAMED_OBJECT_NAME")
     @JvmField val VARIABLE_ACCESSOR: IElementType = OnjElementType("VARIABLE_ACCESSOR")
-    @JvmField val CONVERSION_NAME: IElementType = OnjElementType("CONVERSION_NAME")
     @JvmField val ARRAY_ENTRY: IElementType = OnjElementType("ARRAY_ENTRY")
     @JvmField val IMPORT_PATH: IElementType = OnjElementType("IMPORT_PATH")
 
@@ -129,7 +127,6 @@ object OnjTypes {
             VARIABLE_DECL_NAME -> OnjVariableDeclNamePsi(node)
             NAMED_OBJECT_NAME -> OnjNamedObjectNamePsi(node)
             VARIABLE_ACCESSOR -> OnjVariableAccessorPsi(node)
-            CONVERSION_NAME -> OnjConversionNamePsi(node)
             ARRAY_ENTRY -> OnjArrayEntryPsi(node)
             IMPORT_PATH -> OnjImportPathPsi(node)
             else -> throw RuntimeException("unknown node type ${node.elementType}")

@@ -94,6 +94,11 @@ class OnjSyntaxHighlighter : SyntaxHighlighterBase() {
                 .createTextAttributesKey("ONJ_VARIABLE_NAME", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
         )
 
+        val NAMESPACE_VARIABLE_NAME_HIGHLIGHTING = arrayOf(
+            TextAttributesKey
+                .createTextAttributesKey("ONJ_NAMESPACE_VARIABLE_NAME_HIGHLIGHTING", DefaultLanguageHighlighterColors.STATIC_FIELD)
+        )
+
         val OPERATOR_HIGHLIGHTING = arrayOf(
             TextAttributesKey
                 .createTextAttributesKey("ONJ_OPERATOR", DefaultLanguageHighlighterColors.OPERATION_SIGN)

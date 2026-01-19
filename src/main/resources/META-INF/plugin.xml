@@ -116,7 +116,7 @@
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
         <action id="org.onj.language.action.ReloadSchemaAction" class="org.onj.language.action.ReloadSchemaAction"
-                text="Reload Onj Schema" description="Reload Onj Schema">
+                text="Reload Onj Data" description="Reload all data used for highlighting onj files, i.e. schemas and onjenv files">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="after"
                           relative-to-action="JupyterShutdownNotebookAction"/>
         </action>

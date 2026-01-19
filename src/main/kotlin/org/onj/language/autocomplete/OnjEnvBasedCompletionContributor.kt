@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Unmodifiable
 import org.onj.language.env.OnjFunctionModel
 import org.onj.language.env.OnjVariableModel
 import org.onj.language.psi.OnjTypes
+import org.onj.language.psi.impl.OnjConversionPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
 import org.onj.language.utils.Utils
 import org.onj.language.utils.Utils.findInstance
@@ -43,13 +44,14 @@ class OnjEnvBasedCompletionContributor : CompletionContributor() {
 
 }
 
-class OnjEnvBasedCompletionProvider : CompletionProvider<CompletionParameters>() {
+class OnjEnvBasedCompletionProvider() : CompletionProvider<CompletionParameters>() {
 
     override fun addCompletions(
         parameters: CompletionParameters,
         context: ProcessingContext,
         result: CompletionResultSet
     ) {
+        val searchForConversion = parameters.position.parent.parent is OnjConversionPsi
         val topLevel = parameters
             .originalFile
             .children
@@ -59,9 +61,25 @@ class OnjEnvBasedCompletionProvider : CompletionProvider<CompletionParameters>()
         val project = parameters.originalFile.project
         val psiFile = Utils.findEnvFile(project) ?: return
         val model = psiFile.getEnvironmentModel() ?: return
+        if (searchForConversion) {
+            usedNamespaces.forEach {
+                val namespaceModel = model.namespaces[it] ?: return@forEach
+                namespaceModel.functions.forEach { functionModel ->
+                    if (!functionModel.name.startsWith("convert%")) return@forEach
+                    result.consume(OnjFunctionModelLookupElement(functionModel, it))
+                }
+            }
+            return
+        }
         usedNamespaces.forEach {
             val namespaceModel = model.namespaces[it] ?: return@forEach
             namespaceModel.functions.forEach { functionModel ->
+                if (
+                    functionModel.name.startsWith("operator%") ||
+                    functionModel.name.startsWith("convert%")
+                ) {
+                    return@forEach
+                }
                 result.consume(OnjFunctionModelLookupElement(functionModel, it))
             }
             namespaceModel.variables.forEach { (_, variableModel) ->
@@ -77,14 +95,48 @@ class OnjFunctionModelLookupElement(
     val originNamespace: String
 ) : LookupElement() {
 
-    override fun getLookupString(): String = functionModel.name + "()"
+    private val insertionText: String
+    private val moveCaretBack: Boolean
+
+    init {
+        when {
+            functionModel.isInfix -> {
+                insertionText = functionModel.name + " "
+                moveCaretBack = false
+            }
+            functionModel.name.startsWith("operator%") -> {
+                insertionText = when (functionModel.name.removePrefix("operator%")) {
+                    "plus" -> "+"
+                    "minus" -> "-"
+                    "div" -> "/"
+                    "star" -> "*"
+                    "unaryMinus" -> "-"
+                    else -> ""
+                }
+                moveCaretBack = false
+            }
+            functionModel.name.startsWith("convert%") -> {
+                insertionText = functionModel.name.removePrefix("convert%")
+                moveCaretBack = false
+            }
+            else -> {
+                insertionText = functionModel.name + "()"
+                moveCaretBack = true
+            }
+        }
+    }
+
+    override fun getLookupString(): String = insertionText
 
     override fun getAllLookupStrings(): @Unmodifiable Set<String?> {
-        return setOf(lookupString, functionModel.name)
+        return setOf(insertionText, functionModel.name)
     }
 
     override fun renderElement(presentation: LookupElementPresentation) {
-        presentation.itemText = functionModel.name
+        presentation.itemText = functionModel
+            .name
+            .removePrefix("convert%")
+            .removePrefix("operator%")
         presentation.icon = AllIcons.Nodes.Function
         presentation.typeText = functionModel.returnType.printableName
         presentation.tailText = " from namespace $originNamespace"
@@ -92,8 +144,10 @@ class OnjFunctionModelLookupElement(
 
     override fun handleInsert(context: InsertionContext) {
         super.handleInsert(context)
-        val caret = context.editor.caretModel.primaryCaret
-        caret.moveCaretRelatively(-1, 0, false, false)
+        if (moveCaretBack) {
+            val caret = context.editor.caretModel.primaryCaret
+            caret.moveCaretRelatively(-1, 0, false, false)
+        }
     }
 }
 

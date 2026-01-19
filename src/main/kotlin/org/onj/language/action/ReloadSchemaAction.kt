@@ -7,6 +7,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.vfs.findPsiFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.search.FilenameIndex
 import org.onj.language.language.OnjFile
 import org.onj.language.language.OnjFileType
 import org.onj.language.language.OnjSchemaFile
@@ -26,23 +28,15 @@ class ReloadSchemaAction : AnAction() {
     }
 
     override fun actionPerformed(e: AnActionEvent) {
-        val file = e.getData(CommonDataKeys.VIRTUAL_FILE) ?: return
         val project = e.project ?: return
-        val psiFile = file.findPsiFile(project)
-        if (psiFile is OnjSchemaFile) {
+        Utils.findEnvFile(project)?.clearCachedEnvModel()
+        val psiManager = PsiManager.getInstance(project)
+        val schemaFiles = FilenameIndex.getAllFilesByExt(project, ".onjschema")
+        schemaFiles.forEach { file ->
+            val psiFile = psiManager.findFile(file)
+            if (psiFile !is OnjSchemaFile) return@forEach
             psiFile.clearSchema()
         }
-        if (psiFile !is OnjFile) return
-        val topLevel = psiFile.children.findInstance<OnjTopLevelPsi>() ?: return
-        val schemaPath = topLevel.findSchemaPath() ?: return
-        val root = Utils.findContainingContentRoot(topLevel.containingFile) ?: return
-        val path = root.resolve(Path(schemaPath))
-        val virtualFile = psiFile.containingFile.virtualFile.fileSystem.findFileByPath(path.pathString)
-        if (virtualFile == null || !virtualFile.exists() || virtualFile.fileType != OnjSchemaFileType) {
-            return
-        }
-        val schemaFile = virtualFile.findPsiFile(project) as? OnjSchemaFile ?: return
-        schemaFile.clearSchema()
     }
 
 }

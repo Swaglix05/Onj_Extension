@@ -331,7 +331,7 @@ class NewOnjParser : PsiParser {
                 return false
             }
             builder.advanceLexer()
-            nameMarker.done(OnjTypes.CONVERSION_NAME)
+            nameMarker.done(OnjTypes.FUNCTION_NAME)
             currentMarker.done(OnjTypes.CONVERSION)
             currentMarker = currentMarker.precede()
         }

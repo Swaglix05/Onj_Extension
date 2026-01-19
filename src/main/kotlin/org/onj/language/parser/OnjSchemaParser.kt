@@ -14,7 +14,9 @@ class OnjSchemaParser : PsiParser {
     ): ASTNode {
         // TODO: actual parser
         val mark = builder.mark()
+        val mark2 = builder.mark()
         while (!builder.eof()) builder.advanceLexer()
+        mark2.done(OnjSchemaTypes.FILE)
         mark.done(OnjSchemaTypes.FILE)
         return builder.treeBuilt
     }

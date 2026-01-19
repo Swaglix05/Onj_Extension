@@ -26,9 +26,6 @@ class OnjBasicAnnotator : Annotator {
         OnjTypes.FUNCTION_NAME ->
             annotateWithAttribute(element, holder, OnjSyntaxHighlighter.FUNCTION_NAME_HIGHLIGHTING)
 
-        OnjTypes.CONVERSION_NAME ->
-            annotateWithAttribute(element, holder, OnjSyntaxHighlighter.FUNCTION_NAME_HIGHLIGHTING)
-
         OnjTypes.VARIABLE_USE ->
             annotateWithAttribute(element, holder, OnjSyntaxHighlighter.VARIABLE_NAME_HIGHLIGHTING)
 

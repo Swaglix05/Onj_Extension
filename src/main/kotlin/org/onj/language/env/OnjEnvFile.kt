@@ -21,6 +21,11 @@ class OnjEnvFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Onj
 
     override fun clearCaches() {
         super.clearCaches()
+        clearCachedEnvModel()
+    }
+
+    fun clearCachedEnvModel() {
+        cacheOutdated = true
     }
 
     fun getEnvironmentModel(): OnjEnvModel? {

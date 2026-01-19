@@ -13,7 +13,9 @@ class OnjEnvParser : PsiParser {
         builder: PsiBuilder
     ): ASTNode {
         val mark = builder.mark()
+        val mark2 = builder.mark()
         while (!builder.eof()) builder.advanceLexer()
+        mark2.done(OnjTypes.FILE)
         mark.done(OnjTypes.FILE)
         return builder.treeBuilt
     }

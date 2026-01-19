@@ -16,6 +16,7 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjFunctionCallPsi
 import org.onj.language.psi.impl.OnjInfixFunctionCallPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
+import org.onj.language.psi.impl.OnjVariableUsePsi
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
 import org.onj.language.utils.Utils
@@ -24,14 +25,41 @@ import org.onj.language.utils.Utils.findInstance
 class OnjEnvBasedAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is OnjFunctionLikePsiElement) return
+        if (element !is OnjFunctionLikePsiElement && element !is OnjVariableUsePsi) return
         val topLevel = element.containingFile.children.findInstance<OnjTopLevelPsi>()
             ?: return
         val namespaces = topLevel.findUsedNamespaces()
         val envFile = Utils.findEnvFile(element.project) ?: return
         val envModel = envFile.getEnvironmentModel() ?: return
-        val resolved = annotateFunctionCall(element, namespaces, envModel, holder)
-        resolved?.let { checkFunctionCallMethod(element, it, holder) }
+        if (element is OnjFunctionLikePsiElement) {
+            val resolved = annotateFunctionCall(element, namespaces, envModel, holder)
+            resolved?.let { checkFunctionCallMethod(element, it, holder) }
+        } else if (element is OnjVariableUsePsi) {
+            annotateVariableUse(element, holder)
+        }
+    }
+
+    private fun annotateVariableUse(
+        element: OnjVariableUsePsi,
+        holder: AnnotationHolder
+    ) {
+        val localResolve = element
+            .reference
+            .resolve()
+        if (localResolve != null) return
+        val globalResolve = element.resolveGlobalVariable()
+        if (globalResolve != null) {
+            holder
+                .newSilentAnnotation(HighlightSeverity.INFORMATION)
+                .textAttributes(OnjSyntaxHighlighter.NAMESPACE_VARIABLE_NAME_HIGHLIGHTING.first())
+                .create()
+            return
+        }
+        holder
+            .newAnnotation(HighlightSeverity.ERROR, "Unknown variable")
+            .range(element)
+            .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+            .create()
     }
 
     private fun checkFunctionCallMethod(
@@ -59,7 +87,7 @@ class OnjEnvBasedAnnotator : Annotator {
         }
     }
 
-    fun annotateFunctionCall(
+    private fun annotateFunctionCall(
         element: OnjFunctionLikePsiElement,
         usedNamespaces: List<String>,
         envModel: OnjEnvModel,

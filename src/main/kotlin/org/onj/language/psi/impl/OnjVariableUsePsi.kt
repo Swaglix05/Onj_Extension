@@ -15,6 +15,7 @@ import com.intellij.psi.PsiReference
 import com.intellij.psi.search.SearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import org.jetbrains.annotations.Unmodifiable
+import org.onj.language.env.OnjVariableModel
 import org.onj.language.psi.OnjRenamableReference
 import org.onj.language.psi.OnjTypes
 import org.onj.language.reference.OnjFindUsagesProvider
@@ -24,6 +25,7 @@ import org.onj.language.symbols.OnjVariableSymbol
 import org.onj.language.symbols.OnjVariableSymbolReference
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
+import org.onj.language.utils.Utils
 import org.onj.language.utils.Utils.findInstance
 import java.util.Collections
 
@@ -36,31 +38,27 @@ class OnjVariableUsePsi(
 
     override fun resolveTypeSimple(): OnjType {
         val name = name
-        if (name == "true" || name == "false") return OnjType.SomeBool
-        if (name == "NaN" || name == "infinity") return OnjType.SomeFloat
         if (name == "null") return OnjType.Null
         val target = reference.resolve()
-        if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
-        val parent = target.parent
-        if (parent is OnjImportStructurePsi) return OnjType.SomeObject
-        if (parent !is OnjVarStructurePsi) return OnjType.Unknown
-        return parent.simpleDeclarationType()
+        if (target is OnjVariableDeclNamePsi) {
+            val parent = target.parent
+            if (parent is OnjImportStructurePsi) return OnjType.SomeObject
+            if (parent !is OnjVarStructurePsi) return OnjType.Unknown
+            return parent.simpleDeclarationType()
+        }
+        return resolveGlobalVariable()?.type ?: OnjType.Unknown
     }
 
     override fun resolveTypeFull(): OnjType {
-        when (name) {
-            "true" -> return OnjType.SpecificBool(true)
-            "false" -> return OnjType.SpecificBool(false)
-            "NaN" -> return OnjType.SpecificFloat(Double.NaN)
-            "infinity" -> return OnjType.SpecificFloat(Double.POSITIVE_INFINITY)
-            "null" -> return OnjType.Null
-        }
+        if (name == "null") return OnjType.Null
         val target = reference.resolve()
-        if (target !is OnjVariableDeclNamePsi) return OnjType.Unknown
-        val parent = target.parent
-        if (parent is OnjImportStructurePsi) return OnjType.SomeObject
-        if (parent !is OnjVarStructurePsi) return OnjType.Unknown
-        return parent.fullDeclarationType()
+        if (target is OnjVariableDeclNamePsi) {
+            val parent = target.parent
+            if (parent is OnjImportStructurePsi) return OnjType.SomeObject
+            if (parent !is OnjVarStructurePsi) return OnjType.Unknown
+            return parent.fullDeclarationType()
+        }
+        return resolveGlobalVariable()?.type ?: OnjType.Unknown
     }
 
     fun evaluateSeeThrough(): OnjTypeResolvablePsi? {
@@ -76,6 +74,19 @@ class OnjVariableUsePsi(
         if (amount != 1) return null
         val declaredElement = declaration.children.findInstance<OnjTypeResolvablePsi>() ?: return null
         return declaredElement
+    }
+
+    fun resolveGlobalVariable(): OnjVariableModel? {
+        val env = Utils.findEnvFile(project)?.getEnvironmentModel() ?: return null
+        val topLevel = containingFile.children.findInstance<OnjTopLevelPsi>() ?: return null
+        val includedNamespaces = topLevel.findUsedNamespaces()
+        val name = name
+        includedNamespaces.forEach { namespaceName ->
+            val namespace = env.namespaces[namespaceName] ?: return@forEach
+            val variable = namespace.variables[name] ?: return@forEach
+            return variable
+        }
+        return null
     }
 
     override fun rename(newName: String) {
