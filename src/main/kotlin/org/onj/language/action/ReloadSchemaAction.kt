@@ -9,6 +9,7 @@ import com.intellij.openapi.actionSystem.Presentation
 import com.intellij.openapi.vfs.findPsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.psi.search.FilenameIndex
+import org.onj.language.env.OnjEnvFile
 import org.onj.language.language.OnjFile
 import org.onj.language.language.OnjFileType
 import org.onj.language.language.OnjSchemaFile
@@ -29,13 +30,24 @@ class ReloadSchemaAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-//        Utils.findEnvFile(project)?.clearCachedEnvModel()
         val psiManager = PsiManager.getInstance(project)
-        val schemaFiles = FilenameIndex.getAllFilesByExt(project, ".onjschema")
+        val schemaFiles = FilenameIndex.getAllFilesByExt(project, "onjschema")
         schemaFiles.forEach { file ->
             val psiFile = psiManager.findFile(file)
             if (psiFile !is OnjSchemaFile) return@forEach
             psiFile.clearSchema()
+        }
+        val onjFiles = FilenameIndex.getAllFilesByExt(project, "onj")
+        onjFiles.forEach { file ->
+            val psiFile = psiManager.findFile(file)
+            if (psiFile !is OnjFile) return@forEach
+            psiFile.envFileCacheNoLongerValid()
+        }
+        val onjEnvFiles = FilenameIndex.getAllFilesByExt(project, "onjenv")
+        onjEnvFiles.forEach { file ->
+            val psiFile = psiManager.findFile(file)
+            if (psiFile !is OnjEnvFile) return@forEach
+            psiFile.clearCachedEnvModel()
         }
     }
 

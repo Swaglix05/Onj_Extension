@@ -14,7 +14,7 @@ class OnjTopLevelPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjCanHaveVari
     fun findUsedNamespaces(): List<String> = children
         .filterIsInstance<OnjUseStructurePsi>()
         .mapNotNull {
-            it.node.findChildByType(OnjTypes.IDENTIFIER)?.text
+            it.includedNamespace()
         } + listOf("global")
 
     fun findSchemaComment(): Pair<String, PsiElement>? {

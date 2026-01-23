@@ -41,6 +41,9 @@ class OnjPsiDocumentationProvider : DocumentationTargetProvider {
             if (model != null) return listOf(DocTargets.VariableModel(model, element.project))
             return listOf()
         }
+        if (element is OnjVariableDeclNamePsi) {
+            return listOf(DocTargets.VariableDecl(element))
+        }
         if (element is OnjKeyPsi) {
             return listOf(DocTargets.Key(element))
         }

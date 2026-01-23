@@ -17,6 +17,7 @@ import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjFunctionCallPsi
 import org.onj.language.psi.impl.OnjInfixFunctionCallPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
+import org.onj.language.psi.impl.OnjUseStructurePsi
 import org.onj.language.psi.impl.OnjVariableUsePsi
 import org.onj.language.typeResolution.OnjType
 import org.onj.language.typeResolution.OnjTypeResolvablePsi
@@ -26,7 +27,7 @@ import org.onj.language.utils.Utils.findInstance
 class OnjEnvBasedAnnotator : Annotator {
 
     override fun annotate(element: PsiElement, holder: AnnotationHolder) {
-        if (element !is OnjFunctionLikePsiElement && element !is OnjVariableUsePsi) return
+        if (element !is OnjFunctionLikePsiElement && element !is OnjVariableUsePsi && element !is OnjUseStructurePsi) return
         val topLevel = element.containingFile.children.findInstance<OnjTopLevelPsi>()
             ?: return
         val namespaces = topLevel.findUsedNamespaces()
@@ -37,7 +38,24 @@ class OnjEnvBasedAnnotator : Annotator {
             resolved?.let { checkFunctionCallMethod(element, it, holder) }
         } else if (element is OnjVariableUsePsi) {
             annotateVariableUse(element, holder)
+        } else if (element is OnjUseStructurePsi) {
+            annotateUseStructure(element, envModel, holder)
         }
+    }
+
+    private fun annotateUseStructure(
+        element: OnjUseStructurePsi,
+        envModel: OnjEnvModel,
+        holder: AnnotationHolder
+    ) {
+        val namespace = element.includedNamespace()
+        if (envModel.namespaces.containsKey(namespace)) return
+        val namespaceIdentifier = element.includedNamespacePsi() ?: return
+        holder
+            .newAnnotation(HighlightSeverity.ERROR, "Unknown namespace")
+            .range(namespaceIdentifier)
+            .highlightType(ProblemHighlightType.LIKE_UNKNOWN_SYMBOL)
+            .create()
     }
 
     private fun annotateVariableUse(

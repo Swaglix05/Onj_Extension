@@ -60,6 +60,7 @@ data class OnjFunctionModel(
             .append(cleanName).append("(")
             .append(paramsText)
             .append(")")
+            .append(": ").append(returnType.printableName)
             .append("<br /><br />")
             .append("Schema: <br />")
             .append("<span style=\"color: $htmlStringColor;\">").append(paramsString).append("</span>")

@@ -9,7 +9,10 @@ import org.onj.language.env.OnjEnvFile
 
 class OnjFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, OnjLanguage) {
 
-    private val _envFile: OnjEnvFile? by lazy { envFileLookup() }
+    private val LOCK = Any()
+
+    private var _envFile: OnjEnvFile? = null
+    private var cachedValueValid: Boolean = false
 
     private fun envFileLookup(): OnjEnvFile? {
         // very smart way of selecting the correct file
@@ -20,7 +23,18 @@ class OnjFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, OnjLan
         return psiFile
     }
 
-    fun getEnvFile(): OnjEnvFile? = _envFile
+    fun getEnvFile(): OnjEnvFile? {
+        synchronized(LOCK) {
+            if (cachedValueValid) return _envFile
+            _envFile = envFileLookup()
+            cachedValueValid = true
+            return _envFile
+        }
+    }
+
+    fun envFileCacheNoLongerValid() {
+        cachedValueValid = false
+    }
 
     override fun getFileType(): FileType {
         return OnjFileType
