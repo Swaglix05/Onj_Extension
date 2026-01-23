@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement
 import onj.schema.LiteralOnjSchemaArray
 import onj.schema.TypeBasedOnjSchemaArray
 import org.onj.language.env.OnjFunctionModel
+import org.onj.language.language.OnjFile
 import org.onj.language.psi.OnjFunctionLikePsiElement
 import org.onj.language.psi.OnjTypes
 import org.onj.language.typeResolution.OnjType
@@ -34,7 +35,7 @@ class OnjInfixFunctionCallPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjTy
         // Note that this function doesn't really care if the functionModel it resolves isn't actually an infix
         // function. In case the user accidentally calls a function that wasn't declared as infix with infix syntax, it will
         // resolve correctly anyway. Reporting errors is the job of the annotator
-        val env = Utils.findEnvFile(project)?.getEnvironmentModel() ?: return null
+        val env = (containingFile as OnjFile).getEnvFile()?.getEnvironmentModel() ?: return null
         val topLevel = containingFile.children.findInstance<OnjTopLevelPsi>() ?: return null
         val includedNamespaces = topLevel.findUsedNamespaces()
         val name = resolvableName()

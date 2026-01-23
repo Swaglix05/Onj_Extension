@@ -80,7 +80,7 @@ sealed class OnjType(val printableName: String) {
             // No deep matching performed here
             is OnjSchemaNamedObjectGroup -> if (isObject()) null else "Expected object, found: ${printableName}"
             is OnjSchemaObject -> if (isObject()) null else "Expected object, found: ${printableName}"
-            is OnjSchemaArray -> if (isObject()) null else "Expected array, found: ${printableName}"
+            is OnjSchemaArray -> if (isArray()) null else "Expected array, found: ${printableName}"
             is OnjSchemaCustomDataType -> if (this is Custom && name == schema.name) {
                 null
             } else {

@@ -29,7 +29,7 @@ class ReloadSchemaAction : AnAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         val project = e.project ?: return
-        Utils.findEnvFile(project)?.clearCachedEnvModel()
+//        Utils.findEnvFile(project)?.clearCachedEnvModel()
         val psiManager = PsiManager.getInstance(project)
         val schemaFiles = FilenameIndex.getAllFilesByExt(project, ".onjschema")
         schemaFiles.forEach { file ->

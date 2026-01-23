@@ -324,7 +324,6 @@ class NewOnjParser : PsiParser {
             builder.advanceLexer()
             val nameMarker = builder.mark()
             if (builder.nextIsNot(OnjTypes.IDENTIFIER)) {
-                builder.advanceLexer()
                 builder.error("Expected identifier after conversion")
                 nameMarker.drop()
                 currentMarker.drop()

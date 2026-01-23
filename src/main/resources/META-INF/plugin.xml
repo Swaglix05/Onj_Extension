@@ -106,9 +106,8 @@
         <completion.contributor
                 language="Onj"
                 implementationClass="org.onj.language.autocomplete.OnjEnvBasedCompletionContributor"/>
-        <lang.documentationProvider
-                language="Onj"
-                implementationClass="org.onj.language.documentation.OnjDocumentationProvider"/>
+        <platform.backend.documentation.targetProvider
+                implementation="org.onj.language.documentation.OnjPsiDocumentationProvider"/>
     </extensions>
     <actions>
         <action id="org.onj.language.action.CreateOnjFileAction" class="org.onj.language.action.CreateOnjFileAction"

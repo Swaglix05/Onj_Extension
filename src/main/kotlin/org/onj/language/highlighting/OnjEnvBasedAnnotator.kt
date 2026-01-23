@@ -11,6 +11,7 @@ import onj.schema.LiteralOnjSchemaArray
 import onj.schema.TypeBasedOnjSchemaArray
 import org.onj.language.env.OnjEnvModel
 import org.onj.language.env.OnjFunctionModel
+import org.onj.language.language.OnjFile
 import org.onj.language.psi.OnjFunctionLikePsiElement
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjFunctionCallPsi
@@ -29,7 +30,7 @@ class OnjEnvBasedAnnotator : Annotator {
         val topLevel = element.containingFile.children.findInstance<OnjTopLevelPsi>()
             ?: return
         val namespaces = topLevel.findUsedNamespaces()
-        val envFile = Utils.findEnvFile(element.project) ?: return
+        val envFile = (element.containingFile as OnjFile).getEnvFile() ?: return
         val envModel = envFile.getEnvironmentModel() ?: return
         if (element is OnjFunctionLikePsiElement) {
             val resolved = annotateFunctionCall(element, namespaces, envModel, holder)
@@ -43,6 +44,7 @@ class OnjEnvBasedAnnotator : Annotator {
         element: OnjVariableUsePsi,
         holder: AnnotationHolder
     ) {
+        if (element.name == "null") return
         val localResolve = element
             .reference
             .resolve()

@@ -14,6 +14,7 @@ import com.intellij.util.ProcessingContext
 import org.jetbrains.annotations.Unmodifiable
 import org.onj.language.env.OnjFunctionModel
 import org.onj.language.env.OnjVariableModel
+import org.onj.language.language.OnjFile
 import org.onj.language.psi.OnjTypes
 import org.onj.language.psi.impl.OnjConversionPsi
 import org.onj.language.psi.impl.OnjTopLevelPsi
@@ -58,8 +59,7 @@ class OnjEnvBasedCompletionProvider() : CompletionProvider<CompletionParameters>
             .findInstance<OnjTopLevelPsi>()
             ?: return
         val usedNamespaces = topLevel.findUsedNamespaces()
-        val project = parameters.originalFile.project
-        val psiFile = Utils.findEnvFile(project) ?: return
+        val psiFile = (parameters.originalFile as OnjFile).getEnvFile() ?: return
         val model = psiFile.getEnvironmentModel() ?: return
         if (searchForConversion) {
             usedNamespaces.forEach {

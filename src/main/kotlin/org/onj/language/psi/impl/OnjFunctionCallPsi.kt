@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import onj.schema.LiteralOnjSchemaArray
 import onj.schema.TypeBasedOnjSchemaArray
 import org.onj.language.env.OnjFunctionModel
+import org.onj.language.language.OnjFile
 import org.onj.language.psi.OnjFunctionLikePsiElement
 import org.onj.language.psi.OnjTypes
 import org.onj.language.typeResolution.OnjType
@@ -33,7 +34,7 @@ class OnjFunctionCallPsi(node: ASTNode) : ASTWrapperPsiElement(node), OnjTypeRes
     }
 
     override fun resolveFunction(): OnjFunctionModel? {
-        val env = Utils.findEnvFile(project)?.getEnvironmentModel() ?: return null
+        val env = (containingFile as OnjFile).getEnvFile()?.getEnvironmentModel() ?: return null
         val topLevel = containingFile.children.findInstance<OnjTopLevelPsi>() ?: return null
         val includedNamespaces = topLevel.findUsedNamespaces()
         val name = resolvableName()

@@ -60,6 +60,7 @@ class OnjEnvFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, Onj
                 name: string,
                 isInfix: boolean,
                 paramSchema: string,
+                paramNames: string[],
                 returnType: string,
             };
             

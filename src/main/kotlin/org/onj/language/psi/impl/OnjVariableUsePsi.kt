@@ -16,6 +16,7 @@ import com.intellij.psi.search.SearchScope
 import com.intellij.psi.search.searches.ReferencesSearch
 import org.jetbrains.annotations.Unmodifiable
 import org.onj.language.env.OnjVariableModel
+import org.onj.language.language.OnjFile
 import org.onj.language.psi.OnjRenamableReference
 import org.onj.language.psi.OnjTypes
 import org.onj.language.reference.OnjFindUsagesProvider
@@ -77,7 +78,7 @@ class OnjVariableUsePsi(
     }
 
     fun resolveGlobalVariable(): OnjVariableModel? {
-        val env = Utils.findEnvFile(project)?.getEnvironmentModel() ?: return null
+        val env = (containingFile as OnjFile).getEnvFile()?.getEnvironmentModel() ?: return null
         val topLevel = containingFile.children.findInstance<OnjTopLevelPsi>() ?: return null
         val includedNamespaces = topLevel.findUsedNamespaces()
         val name = name

@@ -17,14 +17,14 @@ object Utils {
         return findContainingContentRoot(psiElement.containingFile)
     }
 
-    fun findEnvFile(project: Project): OnjEnvFile? {
-        // very smart way of selecting the correct file
-        val file = FilenameIndex.getAllFilesByExt(project, "onjenv").minByOrNull { it.path.length }
-            ?: return null
-        val psiFile = PsiManager.getInstance(project).findFile(file)
-        if (psiFile !is OnjEnvFile) return null
-        return psiFile
-    }
+//    fun findEnvFile(project: Project): OnjEnvFile? {
+//        // very smart way of selecting the correct file
+//        val file = FilenameIndex.getAllFilesByExt(project, "onjenv").minByOrNull { it.path.length }
+//            ?: return null
+//        val psiFile = PsiManager.getInstance(project).findFile(file)
+//        if (psiFile !is OnjEnvFile) return null
+//        return psiFile
+//    }
 
     fun findContainingContentRoot(psiFile: PsiFile): Path? {
         val thisFilePath = psiFile.virtualFile.toNioPathOrNull() ?: return null
