@@ -1,7 +1,7 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
 
-    <id>com.onj.language.Onj_Plugin</id>
+    <id>org.onj.language.Onj_Plugin</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
@@ -12,73 +12,112 @@
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
-    <description><![CDATA[
-        This is a Plugin to add support for the onj language. <br />
-        For details about onj, visit the <a href="https://github.com/blueUserRed/Onj.git">repository</a>.
-        <br />
-        <br />
-        Features:
-        <ul>
-            <li>syntax highlighting</li>
-            <li>basic syntax error checking</li>
-            <li>auto formatter</li>
-            <li>simple 'go to definition' logic</li>
-        </ul>
-        <br />
-        Limitations:
-        <ul>
-            <li>error checking beyond the syntax level (e.g. duplicate keys)</li>
-            <li>no refactoring operations like rename refactoring</li>
-            <li>no support for schemas</li>
-            <li>no quick fixes</li>
-        </ul>
-    ]]></description>
+    <description></description>
 
     <depends>com.intellij.modules.platform</depends>
     <!--    <depends>com.intellij.java</depends>-->
 
     <extensions defaultExtensionNs="com.intellij">
         <fileType
-                name="Onj File"
-                implementationClass="org.onj.language.OnjFileType"
+                name="Onj"
+                implementationClass="org.onj.language.language.OnjFileType"
                 fieldName="INSTANCE"
                 language="Onj"
                 extensions="onj"/>
+        <fileType
+                name="OnjSchema"
+                implementationClass="org.onj.language.language.OnjSchemaFileType"
+                fieldName="INSTANCE"
+                language="OnjSchema"
+                extensions="onjschema"/>
+        <fileType
+                name="OnjEnv"
+                implementationClass="org.onj.language.env.OnjEnvFileType"
+                fieldName="INSTANCE"
+                language="OnjEnv"
+                extensions="onjenv"/>
         <lang.parserDefinition
                 language="Onj"
-                implementationClass="org.onj.language.OnjParserDefinition"/>
+                implementationClass="org.onj.language.parser.OnjParserDefinition"/>
+        <lang.parserDefinition
+                language="OnjSchema"
+                implementationClass="org.onj.language.parser.OnjSchemaParserDefinition"/>
+        <lang.parserDefinition
+                language="OnjEnv"
+                implementationClass="org.onj.language.env.OnjEnvParserDefinition"/>
         <lang.syntaxHighlighterFactory
                 language="Onj"
                 implementationClass="org.onj.language.highlighting.OnjSyntaxHighlighterFactory"/>
+        <lang.syntaxHighlighterFactory
+                language="OnjSchema"
+                implementationClass="org.onj.language.highlighting.OnjSchemaSyntaxHighlighterFactory"/>
         <annotator
                 language="Onj"
-                implementationClass="org.onj.language.highlighting.OnjAnnotator"/>
-        <psi.referenceContributor
+                implementationClass="org.onj.language.highlighting.OnjBasicAnnotator"/>
+        <annotator
                 language="Onj"
-                implementation="org.onj.language.reference.OnjReferenceContributor"/>
+                implementationClass="org.onj.language.highlighting.OnjTypeBasedAnnotator"/>
+        <annotator
+                language="Onj"
+                implementationClass="org.onj.language.highlighting.OnjSchemaBasedAnnotator"/>
+        <annotator
+                language="Onj"
+                implementationClass="org.onj.language.highlighting.OnjEnvBasedAnnotator"/>
         <lang.findUsagesProvider
                 language="Onj"
-                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"
-        />
-        <findUsagesHandlerFactory implementation="org.onj.language.reference.OnjFindUsagesHandlerFactory" />
+                implementationClass="org.onj.language.reference.OnjFindUsagesProvider"/>
         <lang.foldingBuilder
                 language="Onj"
                 implementationClass="org.onj.language.OnjFoldingDescriptor"/>
-
-        <iconProvider implementation="org.onj.language.symbols.OnjIconProvider"/>
-
-        <gotoSymbolContributor
-                implementation="org.onj.language.symbols.OnjChooseByNameContributor"/> <!--This doesn't work-->
-        <psi.declarationProvider
-                implementation="org.onj.language.symbols.OnjSymbolDeclarationProvider"/>
-                <lang.formatter
-                    language="Onj"
-                    implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>
-                <lang.braceMatcher
-                    language="Onj"
-                    implementationClass="org.onj.language.OnjPairedBracesMatcher"/>
-                <lang.commenter
-                        language="Onj"
-                        implementationClass="org.onj.language.OnjCommenter"/>
+        <lang.formatter
+                language="Onj"
+                implementationClass="org.onj.language.formatter.OnjFormattingModelBuilder"/>
+        <lang.braceMatcher
+                language="Onj"
+                implementationClass="org.onj.language.OnjPairedBracesMatcher"/>
+        <lang.quoteHandler
+                language="Onj"
+                implementationClass="org.onj.language.OnjQuoteHandler"/>
+        <lang.commenter
+                language="Onj"
+                implementationClass="org.onj.language.OnjCommenter"/>
+        <lang.refactoringSupport
+                language="Onj"
+                implementationClass="org.onj.language.OnjRefactoringSupportProvider"/>
+        <lang.psiStructureViewFactory
+                language="Onj"
+                implementationClass="org.onj.language.structureView.OnjStructureViewFactory"/>
+        <iconProvider
+                implementation="org.onj.language.language.OnjIconProvider"/>
+        <include.provider
+                implementation="org.onj.language.OnjFileIncludeProvider"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjPathCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjVariableCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjAccessCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjSchemaBasedCompletionContributor"/>
+        <completion.contributor
+                language="Onj"
+                implementationClass="org.onj.language.autocomplete.OnjEnvBasedCompletionContributor"/>
+        <platform.backend.documentation.targetProvider
+                implementation="org.onj.language.documentation.OnjPsiDocumentationProvider"/>
     </extensions>
+    <actions>
+        <action id="org.onj.language.action.CreateOnjFileAction" class="org.onj.language.action.CreateOnjFileAction"
+                text="Onj File" description="Create new onj file">
+            <add-to-group group-id="NewGroup" anchor="last"/>
+        </action>
+        <action id="org.onj.language.action.ReloadSchemaAction" class="org.onj.language.action.ReloadSchemaAction"
+                text="Reload Onj Data" description="Reload all data used for highlighting onj files, i.e. schemas and onjenv files">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after"
+                          relative-to-action="JupyterShutdownNotebookAction"/>
+        </action>
+    </actions>
 </idea-plugin>

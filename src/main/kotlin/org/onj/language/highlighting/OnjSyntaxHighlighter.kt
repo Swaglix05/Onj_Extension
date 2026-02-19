@@ -74,7 +74,7 @@ class OnjSyntaxHighlighter : SyntaxHighlighterBase() {
                 .createTextAttributesKey("ONJ_ESCAPE", DefaultLanguageHighlighterColors.VALID_STRING_ESCAPE)
         )
 
-        val INVALID_ESCAPE_HIGHLIGHTING = arrayOf(
+         val INVALID_ESCAPE_HIGHLIGHTING = arrayOf(
             TextAttributesKey
                 .createTextAttributesKey("ONJ_INVALID_ESCAPE", DefaultLanguageHighlighterColors.INVALID_STRING_ESCAPE)
         )
@@ -91,7 +91,12 @@ class OnjSyntaxHighlighter : SyntaxHighlighterBase() {
 
         val VARIABLE_NAME_HIGHLIGHTING = arrayOf(
             TextAttributesKey
-                .createTextAttributesKey("ONJ_VARIABLE_NAME", DefaultLanguageHighlighterColors.STATIC_FIELD)
+                .createTextAttributesKey("ONJ_VARIABLE_NAME", DefaultLanguageHighlighterColors.INSTANCE_FIELD)
+        )
+
+        val NAMESPACE_VARIABLE_NAME_HIGHLIGHTING = arrayOf(
+            TextAttributesKey
+                .createTextAttributesKey("ONJ_NAMESPACE_VARIABLE_NAME_HIGHLIGHTING", DefaultLanguageHighlighterColors.STATIC_FIELD)
         )
 
         val OPERATOR_HIGHLIGHTING = arrayOf(

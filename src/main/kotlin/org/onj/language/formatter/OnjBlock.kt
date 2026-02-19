@@ -24,7 +24,6 @@ class OnjBlock(
 
     override fun buildChildren(): MutableList<Block> {
         val blocks = mutableListOf<Block>()
-        var isFistEntry = true // only relevant when inside an object or array
         iterateOverAstChildren(node) { curChild ->
 
             if (curChild.elementType == TokenType.WHITE_SPACE) return@iterateOverAstChildren
@@ -32,16 +31,12 @@ class OnjBlock(
             val block = OnjBlock(
                 spacingBuilder,
                 curChild,
-                getChildWrap(curChild, isFistEntry),
+                getChildWrap(curChild),
                 null,
                 getChildIndent(curChild)
             )
 
             blocks.add(block)
-
-            if (curChild.elementType == OnjTypes.ARRAY_ENTRY || curChild.elementType == OnjTypes.OBJECT_ENTRY) {
-                isFistEntry = false
-            }
         }
         return blocks
     }
@@ -51,6 +46,7 @@ class OnjBlock(
     }
 
     private fun getChildIndent(childNode: ASTNode): Indent? {
+        if (node.elementType == OnjTypes.TOP_LEVEL) return Indent.getAbsoluteNoneIndent()
         if (node.elementType == OnjTypes.OBJECT && childNode.elementType !in OnjTokenSets.braces) {
             return Indent.getNormalIndent()
         }
@@ -62,34 +58,24 @@ class OnjBlock(
         return Indent.getNoneIndent()
     }
 
-    private fun getChildWrap(childNode: ASTNode, isFirstChild: Boolean): Wrap? {
+    private fun getChildWrap(childNode: ASTNode): Wrap? {
         if (childNode.elementType == OnjTypes.ARRAY_ENTRY) {
-            return if (isFirstChild) {
-                // always wrap the first element
-                Wrap.createWrap(WrapType.ALWAYS, true)
-            } else {
-                Wrap.createWrap(WrapType.NORMAL, false)
-            }
+            return Wrap.createWrap(WrapType.CHOP_DOWN_IF_LONG, true)
         }
-        if (childNode.elementType == OnjTypes.OBJECT_ENTRY) {
+        if (childNode.elementType == OnjTypes.KEY_VALUE_PAIR) {
             return Wrap.createWrap(WrapType.ALWAYS, true)
         }
-        if (childNode.elementType == OnjTypes.R_BRACKET || childNode.elementType == OnjTypes.R_BRACE) {
+        if (childNode.elementType == OnjTypes.R_BRACE) {
             return Wrap.createWrap(WrapType.ALWAYS, true)
         }
         return Wrap.createWrap(WrapType.NONE, false)
     }
 
     override fun getChildIndent(): Indent? {
-        // TODO: fix this
-        if (node.elementType.debugName == "FILE") {
-            // When the file is incomplete the user probably just typed an opening bracket/brace to start an object/array
-            if (!isIncomplete) {
-                return Indent.getNoneIndent()
-            }
+        if (node.elementType == OnjTypes.OBJECT || node.elementType == OnjTypes.ARRAY) {
+            return Indent.getNormalIndent()
         }
-
-        return Indent.getNormalIndent()
+        return Indent.getNoneIndent()
     }
 
 }

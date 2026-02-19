@@ -1,5 +1,5 @@
 {
-  parserClass="org.onj.language.OnjParser"
+  parserClass="org.onj.language.OnjParser2"
 
   extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -8,36 +8,36 @@
   psiPackage="org.onj.language.psi"
   psiImplPackage="org.onj.language.psi.impl"
 
-  elementTypeHolderClass="org.onj.language.psi.OnjTypes"
+  elementTypeHolderClass="org.onj.language.psi2.OnjTypes"
   elementTypeClass="org.onj.language.psi.OnjElementType"
   tokenTypeClass="org.onj.language.psi.OnjTokenType"
-  psiImplUtilClass="org.onj.language.psi.impl.OnjPsiImplUtils"
+  psiImplUtilClass="org.onj.language.psi.OnjPsiImplUtils"
 
 }
 
 
 OnjFile ::= ((objectEntry COMMA) | topLevelStructure)* objectEntry? topLevelStructure?
 
-topLevelStructure ::= importStructure | variableStructure | useStructure
+topLevelStructure ::= importStructure | variableStructure | useStructure //{ recoverWhile="topLevelRecover" }
+private topLevelRecover ::= !(IMPORT | VAR | USE | COMMA | SEMICOLON)
 
-importStructure ::= IMPORT (string | literalExpression) asContextDependentKeyword variableDeclarationName SEMICOLON
+importStructure ::= IMPORT (string | literalExpression) asContextDependentKeyword variableDeclarationName //{pin=1}
+//importStructure ::= IMPORT (string | literalExpression) asContextDependentKeyword variableDeclarationName SEMICOLON //{pin=1}
 variableDeclarationName ::= IDENTIFIER {
-  mixin="org.onj.language.psi.impl.OnjNamedElementImpl"
-  implements="org.onj.language.psi.impl.OnjNamedElement"
+  mixin="org.onj.language.psi.OnjNamedElementImpl"
+  implements="org.onj.language.psi.OnjNamedElement"
   methods=[getName setName getNameIdentifier getPresentation]
 }
-variableStructure ::= VAR variableDeclarationName EQUALS expression SEMICOLON {
-//  mixin="org.onj.language.psi.impl.OnjNamedElementImpl"
-//  implements=["org.onj.language.psi.impl.OnjNamedElement" "org.onj.language.psi.impl.OnjDocumentableElement"]
-//  methods=[getName setName getNameIdentifier getPresentation findDocumentationComment ]
-}
-useStructure ::= USE IDENTIFIER SEMICOLON
+variableStructure ::= VAR variableDeclarationName EQUALS expression {pin=1}
+//variableStructure ::= VAR variableDeclarationName EQUALS expression SEMICOLON {pin=1}
+useStructure ::= USE IDENTIFIER {pin=1}
+//useStructure ::= USE IDENTIFIER SEMICOLON {pin=1}
 
 asContextDependentKeyword ::= "as"
 
 keyValuePair ::= key COLON expression
 key ::= (IDENTIFIER | string)
-tripleDot ::= DOT DOT DOT literalExpression
+tripleDot ::= DOT DOT DOT literalExpression {pin=3}
 
 objectEntry ::= tripleDot | keyValuePair
 arrayEntry ::= tripleDot | expression
@@ -59,32 +59,36 @@ literalExpression ::=   functionCallExpression |
                         string
 
 variableExpression ::= IDENTIFIER {
-  mixin="org.onj.language.psi.impl.OnjNamedElementImpl"
-implements="org.onj.language.psi.impl.OnjNamedElement"
+  mixin="org.onj.language.psi.OnjNamedElementImpl"
+implements="org.onj.language.psi.OnjNamedElement"
 methods=[getName setName getNameIdentifier]
 }
 variableAccessor ::= IDENTIFIER | string
 functionCallExpression ::= functionName L_PAREN (expression COMMA)* expression? R_PAREN{
-// implements="org.onj.language.psi.impl.OnjNamedElement"
+// implements="org.onj.language.psi.OnjNamedElement"
 // methods=[getElementNameKomplex setName getNameIdentifier]
 }
 functionName ::= IDENTIFIER {
-//  implements="org.onj.language.psi.impl.OnjNamedElement"
+//  implements="org.onj.language.psi.OnjNamedElement"
 //  methods=[getName setName getNameIdentifier]
 
 }
-groupedExpression ::= L_PAREN expression R_PAREN
+groupedExpression ::= L_PAREN expression R_PAREN //{pin=1}
 
-object ::= L_BRACE (objectEntry COMMA)* objectEntry? R_BRACE
-namedObject ::= DOLLAR namedObjectName object{
-//  implements="org.onj.language.psi.impl.OnjNamedElement"
+object ::= L_BRACE (objectEntry COMMA)* objectEntry? R_BRACE {pin=1} //{pin=1 recoverWhile="objectRecover"}
+private objectRecover ::= !(R_BRACE | COMMA)
+
+namedObject ::= DOLLAR namedObjectName object {
+    pin=1
+//  implements="org.onj.language.psi.OnjNamedElement"
 //  methods=[getElementNameKomplex setName getNameIdentifier]
 }
 namedObjectName ::= IDENTIFIER {
-//  implements="org.onj.language.psi.impl.OnjNamedElement"
+//  implements="org.onj.language.psi.OnjNamedElement"
 //  methods=[getName setName getNameIdentifier]
 }
-array ::= L_BRACKET (arrayEntry COMMA)* arrayEntry? R_BRACKET
+array ::= L_BRACKET (arrayEntry COMMA)* arrayEntry? R_BRACKET {pin=1} //{pin=1 recoverWhile="arrayRecover"}
+private arrayRecover ::= !(R_BRACKET | COMMA)
 
 binaryOperator ::= PLUS | MINUS | STAR | DIV
 string ::= STRING_BEGIN (STRING_ESCAPE | INVALID_STRING_ESCAPE | STRING_PART)* STRING_END
